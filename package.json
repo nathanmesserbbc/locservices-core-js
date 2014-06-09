@@ -1,0 +1,29 @@
+{
+  "name": "locator-core-js",
+  "version": "0.0.1",
+  "description": "A library for making requests to the locator API",
+  "author": {
+    "name": "BBC Location Services Team"
+  },
+  "scripts": {
+    "build": "grunt build",
+    "test": "grunt qunit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BBC-Location-Services/locator-core-api.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "load-grunt-tasks": "0.2.0",
+    "requirejs": "2.1.9",
+    "grunt": "0.4.2",
+    "grunt-cli": "0.1.11",
+    "grunt-contrib-qunit": "0.4.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-jscs-checker": "^0.4.4",
+    "grunt-contrib-connect": "^0.7.1",
+    "grunt-contrib-uglify": "^0.4.0"
+  }
+}
