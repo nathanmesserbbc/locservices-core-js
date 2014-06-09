@@ -56,7 +56,8 @@ module.exports = function(grunt) {
           sourceMap: true
         },
         files: {
-          "dist/api.min.js": ["src/api.js"]
+          "dist/api.min.js": "src/api.js",
+          "dist/shared.min.js": "src/shared.js"
         }
       }
     }
