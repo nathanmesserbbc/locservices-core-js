@@ -37,11 +37,30 @@ module.exports = function(grunt) {
           middleware: [function(req, res, next) {
             if (req.url.indexOf("test/fixtures") !== -1) {
               var url = require("url").parse(req.url, true);
+              var resObject = {
+                response: {
+                  totalResults: 0,
+                  metadata: {
+                    location: req.url
+                  },
+                  content: {
+                    details: {
+                      details: []
+                    }
+                  },
+                  locations: req.url,
+                  results: {
+                    totalResults: 0,
+                    results: req.url
+                  }
+                }
+              };
+
               res.setHeader("Content-Type", "text/javascript");
               if (url.query.error === "true") {
                 res.statusCode = 404;
               } else {
-                res.write(url.query.jsonp + "({url:\"" + req.url + "\"})");
+                res.write(url.query.jsonp + "(" + JSON.stringify(resObject) + ")");
               }
               res.end();
             }

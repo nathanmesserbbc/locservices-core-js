@@ -1,15 +1,21 @@
-Locator CoreJS - API
+Locator CoreJS Modules
 ====================
 
-Locator CoreJS API module is a library for making requests to the locator API.
+
+* [API module](.#API-module)
+* [Shared module](.#Shared-module)
 
 Installation
 ------------
 
 The API component is available to install via Bower:
 
-    bower install --save-dev BBC-Location-Services/locator-core-api#0.1.0
+    bower install --save-dev BBC-Location-Services/locator-core-js#0.1.0
 
+
+## API module
+
+Locator CoreJS API module is a library for making requests to the locator API.
 
 Usage
 -----
@@ -61,16 +67,74 @@ api.getLocation(2643743, {
 });
 ````
 
-### Details
-
-Returns a single location objects details via it's GeonameID or Postcode.
+This returns the following location object:
 
 ````
-api.getDetails(2643743, ["news", "tv", "radio"], {
+{
+  location: {
+    admin1: {
+      id: 2634895,
+      link: "locations/2634895"
+    },
+    name: "Wales",
+    country: "GB",
+    id: "CF5",
+    language: "en",
+    latitude: 51.47975161228911,
+    longitude: -3.2643369828970714,
+    name: "CF5",
+    placeType: "district",
+    timezone: "Europe/London"
+  }
+}
+````
+
+### Details
+
+Returns a single location object and it's assocuates details via it's GeonameID or Postcode.
+
+````
+api.getDetails(2643743, {
+  params: {
+    details: ["news", "tv", "radio"]
+  },
   success: function(data) {
     console.log(data);
   }
 });
+````
+
+This returns the following location object with it's details:
+
+````
+{
+  details: [{
+    data: {
+      name: "South East Wales",
+      tld: "southeastwales"
+    },
+    detailType: "news",
+    distance: 15219,
+    externalId: "53",
+    latitude: 51.61326398374286,
+    longitude: -3.234201117489571
+  }, ...],
+  location: {
+    admin1: {
+      id: 2634895,
+      link: "locations/2634895"
+    },
+    name: "Wales",
+    country: "GB",
+    id: "CF5",
+    language: "en",
+    latitude: 51.47975161228911,
+    longitude: -3.2643369828970714,
+    name: "CF5",
+    placeType: "district",
+    timezone: "Europe/London"
+  }
+}
 ````
 
 ### Search
@@ -90,6 +154,26 @@ api.search('Cardiff', {
 });
 ````
 
+This returns the following location results:
+
+````
+{
+  metadata: {
+    totalResults: 84
+  },
+  results: [{
+    container: "Cardiff",
+    country: "GB",
+    id: "2653822",
+    language: "en",
+    latitude: 51.48,
+    longitude: -3.18,
+    name: "Cardiff",
+    placeType: "settlement"
+  }, ...]
+}
+````
+
 ### AutoComplete
 
 Returns a series of location objects searching partially on their name.
@@ -105,6 +189,22 @@ api.autoComplete("Card", {
 });
 ````
 
+This returns the following location results:
+
+````
+{
+  metadata: {
+    totalResults: 30
+  },
+  results: [{
+    container: "Cheshire",
+    id: "7298877",
+    language: "en",
+    name: "Carden"
+  }, ...]
+}
+````
+
 ### ReverseGeocode
 
 Returns a series of location objects based on their proximity to the searched longitude / latitude.
@@ -118,6 +218,21 @@ api.reverseGeocode(51.481581, -3.17909, {
     console.log("Error handler: ", event);
   }
 });
+````
+
+This returns the following location results:
+
+````
+{
+  results: [{
+    container: "French Guiana",
+    distance: 126898.53,
+    id: "3382160",
+    isWithinContext: true,
+    language: "en",
+    name: "Cayenne"
+  }, ...]
+}
 ````
 
 ### RequireJS

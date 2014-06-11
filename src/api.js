@@ -32,29 +32,18 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.getLocation = function(id, options) {
+    var details = "",
+        type = "location";
     if (typeof options.params === "undefined") {
       options.params = {};
     }
-
-    request(this.domain + "/locator/locations/" + id, options);
-  };
-
-  /**
-   * Returns a single location objects details via it's GeonameID or Postcode.
-   *
-   * @param {(string|number)} id - A Geoname ID or valid postcode.
-   * @param {(string|array)} details - A location objects details, for example: 'news', 'tv', 'radio', 'weather'
-   * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
-   */
-  API.prototype.getDetails = function(id, details, options) {
-    if (typeof options.params === "undefined") {
-      options.params = {};
+    if (typeof options.params.details !== "undefined") {
+      type = "details";
+      details = "/details/" + options.params.details.join(",");
+      options.params.vv = 2;
+      delete options.params.details;
     }
-    if (typeof details === "string") {
-      details = [details];
-    }
-    details = details.join(",");
-    request(this.domain + "/locator/locations/" + id + "/details/" + details, options);
+    request(this.domain + "/locator/locations/" + id + details, options, type);
   };
 
   /**
@@ -69,7 +58,7 @@
     }
     options.params.s = term;
 
-    request(this.domain + "/locator/locations", options);
+    request(this.domain + "/locator/locations", options, "search");
   };
 
   /**
@@ -84,8 +73,7 @@
     }
     options.params.s = term;
     options.params.a = "true";
-
-    request(this.domain + "/locator/locations", options);
+    request(this.domain + "/locator/locations", options, "autoComplete");
   };
 
   /**
@@ -102,10 +90,10 @@
     options.params.lo = lon;
     options.params.la = lat;
 
-    request(this.domain + "/locator/locations", options);
+    request(this.domain + "/locator/locations", options, "reverseGeocode");
   };
 
-  var request = function(path, options) {
+  var request = function(path, options, type) {
     var script, callbackName;
 
     callbackName = "_callback" + Math.round(10000 * Math.random());
@@ -117,7 +105,7 @@
       delete window[callbackName];
       document.body.removeChild(script);
       if (options.success) {
-        options.success(data);
+        options.success(formatResponse(data, type));
       }
     };
 
@@ -125,6 +113,32 @@
     script.src = path + queryParams(options.params);
     script.onerror = options.error;
     document.body.appendChild(script);
+  };
+
+  var formatResponse = function(data, type) {
+    var response = {};
+
+    switch (type) {
+      case "location":
+        response.location = data.response;
+        break;
+      case "details":
+        response.location = data.response.metadata.location;
+        response.details = data.response.content.details.details;
+        break;
+      case "search":
+        response.results = data.response.locations;
+        response.metadata = { totalResults: data.response.totalResults };
+        break;
+      case "autoComplete":
+        response.results = data.response.results.results;
+        response.metadata = { totalResults: data.response.results.totalResults };
+        break;
+      case "reverseGeocode":
+        response.results = data.response.results.results;
+        break;
+    }
+    return response;
   };
 
   var queryParams = function(params) {

@@ -31,29 +31,6 @@ asyncTest("#getLocation should call error on request", function() {
   });
 });
 
-asyncTest("#getDetails should call success on successful request", function() {
-  expect(1);
-  api.getDetails(2643743, "news", {
-    success: function(data) {
-      ok(true, "Test correctly called success handler");
-      start();
-    }
-  });
-});
-
-asyncTest("#getDetails should call error on request", function() {
-  expect(1);
-  api.getDetails(2643743, "news", {
-    params: {
-      error: "true"
-    },
-    error: function(event) {
-      ok(true, "Test correctly called error handler");
-      start();
-    }
-  });
-});
-
 asyncTest("#search should call success on successful request", function() {
   expect(1);
   api.search("Cardiff", {
@@ -130,25 +107,26 @@ asyncTest("test parameters for #getLocation method", function() {
       language: "en-GB"
     },
     success: function(data) {
-      notEqual(data.url.indexOf("123456"), -1, "Test did not pass geoname parameter through.");
-      notEqual(data.url.indexOf("language=en-GB"), -1, "Test did not pass language parameter through.");
+      notEqual(JSON.stringify(data).indexOf("123456"), -1, "Test did not pass geoname parameter through.");
+      notEqual(JSON.stringify(data).indexOf("language=en-GB"), -1, "Test did not pass language parameter through.");
       start();
     }
   });
 });
 
-asyncTest("test parameters for #getDetails method", function() {
+asyncTest("test parameters for #getLocation method", function() {
   expect(4);
-  api.getDetails(123456, ["news", "tv", "radio"], {
+  api.getLocation(123456, {
     params: {
+      details: ["news", "tv", "radio"],
       language: "en-GB",
       rows: 4
     },
     success: function(data) {
-      notEqual(data.url.indexOf("123456"), -1, "Test did not pass geoname parameter through.");
-      notEqual(data.url.indexOf("news,tv,radio"), -1, "Test did not pass details parameter through.");
-      notEqual(data.url.indexOf("language=en-GB"), -1, "Test did not pass language parameter through.");
-      notEqual(data.url.indexOf("rows=4"), -1, "Test did not pass rows parameter through.");
+      notEqual(JSON.stringify(data).indexOf("123456"), -1, "Test did not pass geoname parameter through.");
+      notEqual(JSON.stringify(data).indexOf("news,tv,radio"), -1, "Test did not pass details parameter through.");
+      notEqual(JSON.stringify(data).indexOf("language=en-GB"), -1, "Test did not pass language parameter through.");
+      notEqual(JSON.stringify(data).indexOf("rows=4"), -1, "Test did not pass rows parameter through.");
       start();
     }
   });
@@ -162,9 +140,9 @@ asyncTest("test parameters for #search method", function() {
       rows: "15"
     },
     success: function(data) {
-      notEqual(data.url.indexOf("s=Cardiff"), -1, "Test did not pass search parameter through.");
-      notEqual(data.url.indexOf("language=en-GB"), -1, "Test did not pass language parameter through.");
-      notEqual(data.url.indexOf("rows=15"), -1, "Test did not pass rows parameter through.");
+      notEqual(JSON.stringify(data).indexOf("s=Cardiff"), -1, "Test did not pass search parameter through.");
+      notEqual(JSON.stringify(data).indexOf("language=en-GB"), -1, "Test did not pass language parameter through.");
+      notEqual(JSON.stringify(data).indexOf("rows=15"), -1, "Test did not pass rows parameter through.");
       start();
     }
   });
@@ -178,10 +156,10 @@ asyncTest("test parameters for #autoComplete method", function() {
       rows: "35"
     },
     success: function(data) {
-      notEqual(data.url.indexOf("s=Card"), -1, "Test did not pass search parameter through.");
-      notEqual(data.url.indexOf("a=true"), -1, "Test did not pass autocomplete parameter through.");
-      notEqual(data.url.indexOf("language=cy-GB"), -1, "Test did not pass language parameter through.");
-      notEqual(data.url.indexOf("rows=35"), -1, "Test did not pass rows parameter through.");
+      notEqual(JSON.stringify(data).indexOf("s=Card"), -1, "Test did not pass search parameter through.");
+      notEqual(JSON.stringify(data).indexOf("a=true"), -1, "Test did not pass autocomplete parameter through.");
+      notEqual(JSON.stringify(data).indexOf("language=cy-GB"), -1, "Test did not pass language parameter through.");
+      notEqual(JSON.stringify(data).indexOf("rows=35"), -1, "Test did not pass rows parameter through.");
       start();
     }
   });
@@ -195,10 +173,10 @@ asyncTest("test parameters for #reverseGeocode method", function() {
       language: "cy-GB"
     },
     success: function(data) {
-      notEqual(data.url.indexOf("la=5.1"), -1, "Test did not pass lo parameter through.");
-      notEqual(data.url.indexOf("lo=-51.2"), -1, "Test did not pass la parameter through.");
-      notEqual(data.url.indexOf("rows=100"), -1, "Test did not pass rows parameter through.");
-      notEqual(data.url.indexOf("language=cy-GB"), -1, "Test did not pass language parameter through.");
+      notEqual(JSON.stringify(data).indexOf("la=5.1"), -1, "Test did not pass lo parameter through.");
+      notEqual(JSON.stringify(data).indexOf("lo=-51.2"), -1, "Test did not pass la parameter through.");
+      notEqual(JSON.stringify(data).indexOf("rows=100"), -1, "Test did not pass rows parameter through.");
+      notEqual(JSON.stringify(data).indexOf("language=cy-GB"), -1, "Test did not pass language parameter through.");
       start();
     }
   });
