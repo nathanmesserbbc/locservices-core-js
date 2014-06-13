@@ -17,12 +17,9 @@
    * @param {string} env - The Forge environment to run against.
    * @param {string} [domain] - The optional domain to make requests to.
    */
-  function API(env, domain) {
-    if (typeof domain === "undefined") {
-      domain = "//open." + env + ".bbc.co.uk";
-    }
-    this.env = env;
-    this.domain = domain;
+  function API(options) {
+    this.env = options.env || "live";
+    this.domain = options.domain || "//open." + this.env + ".bbc.co.uk";
   }
 
   /**
@@ -34,16 +31,13 @@
   API.prototype.getLocation = function(id, options) {
     var details = "",
         type = "location";
-    if (typeof options.params === "undefined") {
-      options.params = {};
-    }
-    if (typeof options.params.details !== "undefined") {
+    options.params = options.params || {};
+    if (typeof options.details !== "undefined") {
       type = "details";
-      details = "/details/" + options.params.details.join(",");
+      details = "/details/" + options.details.join(",");
       options.params.vv = 2;
-      delete options.params.details;
     }
-    request(this.domain + "/locator/locations/" + id + details, options, type);
+    request(this.domain + "/locator/locations/" + encodeURIComponent(id) + details, options, type);
   };
 
   /**
@@ -53,9 +47,7 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.search = function(term, options) {
-    if (typeof options.params === "undefined") {
-      options.params = {};
-    }
+    options.params = options.params || {};
     options.params.s = term;
 
     request(this.domain + "/locator/locations", options, "search");
@@ -68,9 +60,7 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.autoComplete = function(term, options) {
-    if (typeof options.params === "undefined") {
-      options.params = {};
-    }
+    options.params = options.params || {};
     options.params.s = term;
     options.params.a = "true";
     request(this.domain + "/locator/locations", options, "autoComplete");
@@ -84,19 +74,29 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.reverseGeocode = function(lat, lon, options) {
-    if (typeof options.params === "undefined") {
-      options.params = {};
-    }
+    options.params = options.params || {};
     options.params.lo = lon;
     options.params.la = lat;
 
     request(this.domain + "/locator/locations", options, "reverseGeocode");
   };
 
+  /**
+   * Returns a series of location objects based on their proximity to the searched longitude / latitude.
+   *
+   * @param {(string|number)} id - A Geoname ID or valid postcode.
+   * @param {object} [options] - An object eith the following valid properties, 'success', 'error'
+   */
+  API.prototype.getCookie = function(id, options) {
+    options.params = options.params || {};
+    options.params.id = id;
+
+    request("http://pal.sandbox.dev.bbc.co.uk/locator/default/shared/location.json", options, "cookie");
+  };
+
   var request = function(path, options, type) {
     var script, callbackName;
-
-    callbackName = "_callback" + Math.round(10000 * Math.random());
+    callbackName = "_locservices_core_api_cb_" + new Date().getTime() + Math.round(100000 * Math.random());
 
     options.params.format = "jsonp";
     options.params.jsonp = callbackName;
@@ -111,7 +111,9 @@
 
     script = document.createElement("script");
     script.src = path + queryParams(options.params);
-    script.onerror = options.error;
+    if (typeof options.error === "function") {
+      script.onerror = options.error;
+    }
     document.body.appendChild(script);
   };
 
@@ -119,6 +121,9 @@
     var response = {};
 
     switch (type) {
+    case "cookie":
+        response = data;
+        break;
       case "location":
         response.location = data.response;
         break;
@@ -145,7 +150,7 @@
     var queries = [];
     for (var key in params) {
       if (params.hasOwnProperty(key)) {
-        queries.push(key + "=" + params[key]);
+        queries.push(key + "=" + encodeURIComponent(params[key]));
       }
     }
     return "?" + queries.join("&");
