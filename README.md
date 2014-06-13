@@ -241,6 +241,30 @@ This returns the following location results:
 }
 ````
 
+### Cookie
+
+Returns a compressed cookie based on the location (geonameID or Postcode) passed in: 
+
+````
+api.getCoolie("CF5", {
+  success: function(data) {
+    console.log(data);
+  }
+});
+````
+
+This returns the following cookie details for use in the locserv cookie:
+
+````
+{
+  type: "location",
+  id: "CF5",
+  name: "CF5",
+  cookie: "1#l1#i=CF5:n=CF5:h=w@w1#i=2071:p=Barry@d1#1=wa:2=w:3=w:4=44.9@n1#r=53",
+  expires: "1434184279"
+}
+````
+
 ### RequireJS
 
 If RequireJS is available in the page then the component can be safely included via require:
