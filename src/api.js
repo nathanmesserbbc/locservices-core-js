@@ -37,7 +37,7 @@
       details = "/details/" + options.details.join(",");
       options.params.vv = 2;
     }
-    request(this.domain + "/locator/locations/" + id + details, options, type);
+    request(this.domain + "/locator/locations/" + encodeURIComponent(id) + details, options, type);
   };
 
   /**
@@ -150,7 +150,7 @@
     var queries = [];
     for (var key in params) {
       if (params.hasOwnProperty(key)) {
-        queries.push(key + "=" + params[key]);
+        queries.push(key + "=" + encodeURIComponent(params[key]));
       }
     }
     return "?" + queries.join("&");

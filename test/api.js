@@ -207,3 +207,26 @@ asyncTest("test parameters for #reverseGeocode method", function() {
     }
   });
 });
+
+asyncTest("test location id is URI encoded", function() {
+  expect(1);
+  api.getLocation("<a>a link</a>", {
+    success: function(data) {
+      notEqual(JSON.stringify(data).indexOf("%3Ca%3Ea%20link%3C%2Fa%3E"), -1, "Test did not URI encode the location id.");
+      start();
+    }
+  });
+});
+
+asyncTest("test parameters are URI encoded", function() {
+  expect(1);
+  api.getLocation(123456, {
+    params: {
+      rows: "\\A"
+    },
+    success: function(data) {
+      notEqual(JSON.stringify(data).indexOf("rows=%5CA"), -1, "Test did not URI encode the location id.");
+      start();
+    }
+  });
+});
