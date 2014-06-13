@@ -2,7 +2,7 @@ var api;
 
 module("API", {
   setup: function() {
-    api = new locator.core.API("int", "http://localhost:9999/test/fixtures");
+    api = new locator.core.API({ domain: "http://localhost:9999/test/fixtures" });
   },
   teardown: function() {
   }
@@ -21,6 +21,31 @@ asyncTest("#getLocation should call success on successful request", function() {
 asyncTest("#getLocation should call error on request", function() {
   expect(1);
   api.getLocation(2643743, {
+    params: {
+      error: "true"
+    },
+    error: function(event) {
+      ok(true, "Test correctly called error handler");
+      start();
+    }
+  });
+});
+
+asyncTest("#getLocation with details should call success on successful request", function() {
+  expect(1);
+  api.getLocation(2643743, {
+    details: ["tv", "radio"],
+    success: function(data) {
+      ok(true, "Test correctly called success handler");
+      start();
+    }
+  });
+});
+
+asyncTest("#getLocation with details should call error on request", function() {
+  expect(1);
+  api.getLocation(2643743, {
+    details: ["tv", "radio"],
     params: {
       error: "true"
     },
@@ -114,17 +139,18 @@ asyncTest("test parameters for #getLocation method", function() {
   });
 });
 
-asyncTest("test parameters for #getLocation method", function() {
+asyncTest("test details parameters for #getLocation method", function() {
   expect(4);
   api.getLocation(123456, {
+    details: ["news", "tv", "radio"],
     params: {
-      details: ["news", "tv", "radio"],
       language: "en-GB",
       rows: 4
     },
     success: function(data) {
+
       notEqual(JSON.stringify(data).indexOf("123456"), -1, "Test did not pass geoname parameter through.");
-      notEqual(JSON.stringify(data).indexOf("news,tv,radio"), -1, "Test did not pass details parameter through.");
+      notEqual(JSON.stringify(data).indexOf("details/news,tv,radio"), -1, "Test did not pass details parameter through.");
       notEqual(JSON.stringify(data).indexOf("language=en-GB"), -1, "Test did not pass language parameter through.");
       notEqual(JSON.stringify(data).indexOf("rows=4"), -1, "Test did not pass rows parameter through.");
       start();

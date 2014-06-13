@@ -2,8 +2,8 @@ Locator CoreJS Modules
 ====================
 
 
-* [API module](.#API-module)
-* [Shared module](.#Shared-module)
+* [API module](#api-module)
+* [Shared module](#shared-module)
 
 Installation
 ------------
@@ -20,20 +20,28 @@ Locator CoreJS API module is a library for making requests to the locator API.
 Usage
 -----
 
-To load up a new instance of the API you'll need to pass an environment to the constructor. The API uses the open endpoints for it's requests:
-
-| Env   | URL                                  |
-| ----- | ------------------------------------ |
-| int   | https://open.int.bbc.co.uk/locator   |
-| test  | https://open.test.bbc.co.uk/locator  |
-| stage | https://open.stage.bbc.co.uk/locator |
-| live  | https://open.live.bbc.co.uk/locator  |
-
-For example if we wanted to route all requests through: `https://open.stage.bbc.co.uk/locator`
+To load up a new instance of the API you only need to invoke it's constructor. By default this will route all requests through the `//open.live.bbc.co.uk/locator` endpoint.
 
 ````
-var api = new locator.core.API("stage");
+var api = new locator.core.API();
 ````
+
+The API uses the open endpoints for it's requests if you pass an optional `{env: "test"}` to the constructor:
+
+| Env            | URL                            |
+| -----          | ------------------------------ |
+| int            | //open.int.bbc.co.uk/locator   |
+| test           | //open.test.bbc.co.uk/locator  |
+| stage          | //open.stage.bbc.co.uk/locator |
+| live (default) | //open.live.bbc.co.uk/locator  |
+
+For example if we wanted to route all requests through the stage environment: `https://open.stage.bbc.co.uk/locator`
+
+````
+var api = new locator.core.API({ env: "stage" });
+````
+
+If you want to pass all requests to a separate domain, then you can optionally pass a `{ domain: "https://api.test.bbc.co.uk/locator" }` option to the constructor.
 
 ### Options / parameters
 
@@ -91,13 +99,11 @@ This returns the following location object:
 
 ### Details
 
-Returns a single location object and it's assocuates details via it's GeonameID or Postcode.
+Returns a single location object and it's associates details via it's GeonameID or Postcode.
 
 ````
-api.getDetails(2643743, {
-  params: {
-    details: ["news", "tv", "radio"]
-  },
+api.getLocation(2643743, {
+  details: ["news", "tv", "radio"],
   success: function(data) {
     console.log(data);
   }
