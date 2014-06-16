@@ -54,12 +54,24 @@ asyncTest("#getLocation should call error on request", function() {
   });
 });
 
-asyncTest("#getLocation with detailTypes should call success on successful request", function() {
+asyncTest("#getLocation with detailTypes array should call success on successful request", function() {
   expect(1);
   api.getLocation(2643743, {
     detailTypes: ["tv", "radio"],
     success: function(data) {
       ok(true, "Test correctly called success handler");
+      start();
+    }
+  });
+});
+
+asyncTest("#getLocation with non-array detailTypes should not add detail types to request", function() {
+  expect(1);
+  api.getLocation(2643743, {
+    detailTypes: "foo",
+    success: function(data) {
+      var uri = data.location.metadata.location;
+      equal(uri.indexOf("foo"), -1, "Test did not pass detailTypes when not an array.");
       start();
     }
   });

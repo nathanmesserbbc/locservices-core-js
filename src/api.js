@@ -14,8 +14,7 @@
   /**
    * Represents an API.
    * @constructor
-   * @param {string} env - The Forge environment to run against.
-   * @param {string} [domain] - The optional domain to make requests to.
+   * @param {object} options - Options to configure instance
    */
   function API(options) {
     options = options || {};
@@ -33,7 +32,7 @@
     var details = "",
         type = "location";
     options.params = options.params || {};
-    if (typeof options.detailTypes !== "undefined") {
+    if (options.detailTypes && Object.prototype.toString.call(options.detailTypes) === "[object Array]") {
       type = "details";
       details = "/details/" + options.detailTypes.join(",");
       options.params.vv = 2;
