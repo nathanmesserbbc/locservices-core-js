@@ -37,9 +37,6 @@
       type = "details";
       details = "/details/" + options.detailTypes.join(",");
       options.params.vv = 2;
-      if (options.operation) {
-        options.params.operation = options.operation;
-      }
     }
     request(this.domain + "/locator/locations/" + encodeURIComponent(id) + details, options, type);
   };

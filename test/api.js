@@ -79,22 +79,6 @@ asyncTest("#getLocation with detailTypes should call error on request", function
   });
 });
 
-asyncTest("#getLocation with detailTypes and operation should call success on successful request", function() {
-  var expectedOperation = "foo", result;
-  expect(1);
-  api.getLocation(2643743, {
-    detailTypes: ["tv", "radio"],
-    operation: expectedOperation,
-    success: function(data) {
-      ok(
-        data.location.indexOf("operation=" + expectedOperation), 
-        "Operation parameter added to url."
-      );
-      start();
-    }
-  });
-});
-
 asyncTest("#search should call success on successful request", function() {
   expect(1);
   api.search("Cardiff", {
