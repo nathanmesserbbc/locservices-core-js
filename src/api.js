@@ -18,6 +18,7 @@
    * @param {string} [domain] - The optional domain to make requests to.
    */
   function API(options) {
+    options = options || {};
     this.env = options.env || "live";
     this.domain = options.domain || "//open." + this.env + ".bbc.co.uk";
   }
@@ -32,10 +33,13 @@
     var details = "",
         type = "location";
     options.params = options.params || {};
-    if (typeof options.details !== "undefined") {
+    if (typeof options.detailTypes !== "undefined") {
       type = "details";
-      details = "/details/" + options.details.join(",");
+      details = "/details/" + options.detailTypes.join(",");
       options.params.vv = 2;
+      if (options.operation) {
+        options.params.operation = options.operation;
+      }
     }
     request(this.domain + "/locator/locations/" + encodeURIComponent(id) + details, options, type);
   };
