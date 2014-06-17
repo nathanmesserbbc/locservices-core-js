@@ -99,6 +99,8 @@
    */
   RecentLocations.prototype.remove = function(locationId) {
 
+    var locations = [];
+
   };
 
   /**

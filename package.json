@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "grunt build",
-    "test": "grunt qunit"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
