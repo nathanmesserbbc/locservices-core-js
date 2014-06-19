@@ -16,9 +16,24 @@
    * @return Boolean
    */
   function isValidLocation(location) {
+
     location = location || {};
+
+    if (!location.hasOwnProperty("placeType")) {
+      return false;
+    }
+
+    if (location.placeType !== "postcode" && location.placeType !== "district") {
+      if (!location.hasOwnProperty("container")) {
+        return false;
+      }
+    }
+
     return location.id && location.name;
   }
+
+  // check if the browser can support the capabilities of this module
+  var isSupported = (typeof window.JSON === "object" && typeof window.localStorage === "object");
 
   /**
    *
@@ -27,7 +42,7 @@
   function LocalStorageAdapter() {
 
     // prefix localStorage entries to avoid name clashes
-    this._prefix = "locator-recent-locations";
+    this._prefix = "locservices-recent-locations";
   }
 
   /**
@@ -36,7 +51,14 @@
    * @return {Array}
    */
   LocalStorageAdapter.prototype.get = function() {
-    return JSON.parse(localStorage[this._prefix]);
+
+    var list = [];
+
+    try {
+      list = JSON.parse(localStorage[this._prefix]);
+    } catch (Error) {}
+
+    return list;
   };
 
   /**
@@ -45,6 +67,11 @@
    * @param {Array} locations
    */
   LocalStorageAdapter.prototype.set = function(locations) {
+
+    if (Object.prototype.toString.call(locations) !== "[object Array]") {
+      locations = [locations];
+    }
+
     localStorage[this._prefix] = JSON.stringify(locations);
   };
 
@@ -56,11 +83,19 @@
   function RecentLocations() {
 
     // storage adapter. this can be BBC iD later on
-    this._adapter = new LocalStorageAdapter();
-
-    // perform a check to see if the browser can support this modules functionality
-    this.isSupported = (typeof window.JSON !== "object" || typeof window.localStorage !== "object");
+    if (this.isSupported()) {
+      this._storageAdapter = new LocalStorageAdapter();
+    }
   }
+
+  /**
+   * Check to see if the browser has the capabilities to support this module.
+   *
+   * @returns {Boolean}
+   */
+  RecentLocations.prototype.isSupported = function() {
+    return isSupported;
+  };
 
   /**
    * Return all the locations
@@ -69,7 +104,7 @@
    */
   RecentLocations.prototype.all = function() {
 
-    return this._adapter.get();
+    return this._storageAdapter.get();
   };
 
   /**
@@ -83,13 +118,15 @@
       throw new Error("Locations passed to RecentStorage must look like a location entity");
     }
 
+    // don't add duplicates
     if (this.contains(location.id)) {
       return;
     }
 
-    var locations = this._adapter.get();
+    var locations = this._storageAdapter.get();
+
     locations.unshift(location);
-    this._adapter.set(locations);
+    this._storageAdapter.set(locations);
   };
 
   /**
@@ -99,8 +136,17 @@
    */
   RecentLocations.prototype.remove = function(locationId) {
 
-    var locations = [];
+    var new_list = [];
+    var old_list = this._storageAdapter.get();
+    var k;
 
+    for (k in old_list) {
+      if (old_list.hasOwnProperty(k) && old_list[k].id.toString() !== locationId.toString()) {
+        new_list.push(old_list[k]);
+      }
+    }
+
+    this._storageAdapter.set(new_list);
   };
 
   /**
@@ -109,7 +155,7 @@
    * @return void
    */
   RecentLocations.prototype.clear = function() {
-    this._adapter.set([]);
+    this._storageAdapter.set([]);
   };
 
   /**
@@ -121,7 +167,7 @@
   RecentLocations.prototype.contains = function(locationId) {
 
     var exists = false;
-    var locations = this._adapter.get();
+    var locations = this._storageAdapter.get();
     var n;
 
     for (n in locations) {
