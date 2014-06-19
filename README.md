@@ -1,6 +1,7 @@
 Locator CoreJS Modules
 ====================
 
+[![Build Status](https://travis-ci.org/BBC-Location-Services/locator-core-js.svg)](https://travis-ci.org/BBC-Location-Services/locator-core-js)
 
 * [API module](#api-module)
 * [Shared module](#shared-module)
