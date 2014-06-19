@@ -14,6 +14,50 @@ The API component is available to install via Bower:
     bower install --save-dev BBC-Location-Services/locator-core-js#0.1.0
 
 
+## Recent Locations module
+
+The recent locations module provides the functionality to store locations in an
+ordered set using a range of storage adapters. Currently, the only storage
+adapter available is the LocalStorageAdapter that will store the list in the
+browser's local storage.
+
+Usage
+-----
+
+Create a new instance;
+
+```
+var recentLocations = new locator.core.RecentLocations();
+```
+
+In order to check the current browser supports this module, use the ```isSupported()```
+method. Browsers that support local storage and JSON are currently supported.
+
+To add a location;
+
+```
+var location = { id: 1, name: "CF5", placeType: "postcode" };
+recentLocations.add(location);
+```
+
+To get all locations in order;
+
+```
+recentLocations.all(); // will return an Array
+```
+
+To remove a location
+
+```
+recentLocations.remove(1234); // specify a location id
+```
+
+To clear all location history
+
+```
+recentLocations.clear();
+```
+
 ## API module
 
 Locator CoreJS API module is a library for making requests to the locator API.
