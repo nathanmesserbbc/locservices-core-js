@@ -53,10 +53,15 @@
   LocalStorageAdapter.prototype.get = function() {
 
     var list = [];
+    var storageList = localStorage[this._prefix];
+
+    if (!storageList) {
+      return list;
+    }
 
     try {
       list = JSON.parse(localStorage[this._prefix]);
-    } catch (Error) {}
+    } catch (Error) { /* No need to do anything as we'll return an empty array*/ }
 
     return list;
   };
@@ -65,11 +70,13 @@
    * Save some items
    *
    * @param {Array} locations
+   * @return {Boolean|void} this will return false when the locations parameter
+   * is not an array
    */
   LocalStorageAdapter.prototype.set = function(locations) {
 
     if (Object.prototype.toString.call(locations) !== "[object Array]") {
-      locations = [locations];
+      return false;
     }
 
     localStorage[this._prefix] = JSON.stringify(locations);
@@ -116,11 +123,13 @@
   RecentLocations.prototype.add = function(location) {
 
     if (!isValidLocation(location)) {
-      throw new Error("Locations passed to RecentStorage must look like a location entity");
+      throw new Error("Locations passed to RecentLocations must be a valid location");
     }
 
-    // don't add duplicates
+    // if a duplicate is added then it will get moved to the top of the stack
     if (this.contains(location.id)) {
+      this.remove(location.id);
+      this.add(location);
       return;
     }
 
