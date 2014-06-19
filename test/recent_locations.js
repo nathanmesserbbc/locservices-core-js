@@ -83,3 +83,20 @@ test("LocalStorage adapter doesn't add non-array values", function() {
 
   equal(recentLocations.all().length, 0, "Array type conversion");
 });
+
+test("Adding a location performs a check for duplicate entries", function() {
+
+  var stub = sinon.stub(recentLocations, "contains");
+  var loc = { id: 1, name: "Cardiff", placeType: "postcode" };
+
+  recentLocations.add(loc);
+
+  ok(stub.calledWith(1), "Checked for duplicate entry");
+});
+
+test("clear calls the storage adapters clear method", function() {
+
+  var stub = sinon.stub(recentLocations._storageAdapter, "set");
+  recentLocations.clear();
+  ok(stub.calledWith([]), "set() called with empty array");
+});
