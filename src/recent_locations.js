@@ -32,7 +32,7 @@
     return location.id && location.name;
   }
 
-  // check if the browser can support the capabilities of this module
+  // check if the browser has the capabilities to support this module
   var isSupported = (typeof window.JSON === "object" && typeof window.localStorage === "object");
 
   /**
@@ -108,7 +108,8 @@
   };
 
   /**
-   * Add a location. This method will
+   * Add a location to the recent locations list. The location will be added to
+   * the top of the stack.
    *
    * @param {Object} location
    */
@@ -168,10 +169,10 @@
 
     var exists = false;
     var locations = this._storageAdapter.get();
-    var n;
+    var k;
 
-    for (n in locations) {
-      if (locations.hasOwnProperty(n) && locations[n].id === locationId) {
+    for (k in locations) {
+      if (locations.hasOwnProperty(k) && locations[k].id === locationId) {
         exists = true;
       }
     }
