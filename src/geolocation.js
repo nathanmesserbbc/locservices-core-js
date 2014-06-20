@@ -19,6 +19,7 @@
    * @param {Function} onSuccess
    * @param {Function} onError
    * @param {Object} options
+   * @return {Boolean} whether a call to the geolocation api was successfully made
    */
   function getCurrentPosition(onSuccess, onError, options) {
 
@@ -30,11 +31,12 @@
 
     // make it look like a PositionError
     if (!isSupported()) {
-      onError({ code: 2, message: "The current browser does not support Geolocation" });
-      return;
+      return false;
     }
 
     navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
+
+    return true;
   }
 
   return {

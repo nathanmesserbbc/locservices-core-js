@@ -6,25 +6,16 @@ module("Geolocation", {
   }
 });
 
-test("Error callback called when browser does not support Geolocation", function() {
+test("false is returned when the browser does not support Geolocation", function() {
 
   var spy = sinon.spy();
 
   delete window.navigator.geolocation;
-  locator.core.geolocation.getCurrentPosition(function() {}, spy);
-
-  ok(spy.calledOnce);
+  ok(!locator.core.geolocation.getCurrentPosition(function() {}, spy));
 });
 
-test("Error callback passes the correct error message when browser not supported", function() {
-
-  var spy = sinon.spy();
-  var expectedError = { code: 2, message: "The current browser does not support Geolocation" };
-
-  delete window.navigator.geolocation;
-  locator.core.geolocation.getCurrentPosition(function() {}, spy);
-
-  ok(spy.calledWith(expectedError));
+test("true is returned when successful api call is made", function() {
+  ok(locator.core.geolocation.getCurrentPosition());
 });
 
 test("getCurrentPosition() proxies to Geolocation API call", function() {

@@ -76,7 +76,8 @@ module.exports = function(grunt) {
         },
         files: {
           "dist/api.min.js": "src/api.js",
-          "dist/shared.min.js": "src/shared.js"
+          "dist/shared.min.js": "src/shared.js",
+          "dist/geolocation.min.js": "src/geolocation.js"
         }
       }
     }
