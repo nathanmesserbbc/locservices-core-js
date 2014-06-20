@@ -3,6 +3,8 @@ Locator CoreJS Modules
 
 [![Build Status](https://travis-ci.org/BBC-Location-Services/locator-core-js.svg)](https://travis-ci.org/BBC-Location-Services/locator-core-js)
 
+* [Geolocation module](#geolocation-module)
+* [Recent Locations module](#recent-locations-module)
 * [API module](#api-module)
 * [Shared module](#shared-module)
 
@@ -12,6 +14,25 @@ Installation
 The API component is available to install via Bower:
 
     bower install --save-dev BBC-Location-Services/locator-core-js#0.1.0
+
+
+## Geolocation module
+
+The geolocation module provides a light abstraction around the browsers'
+Geolocation API. To test if the browser supports the api, use;
+
+```
+locator.core.geolocation.isSupported
+```
+
+To obtain the users position, use;
+
+```
+locator.core.geolocation.getCurrentPosition(onSuccess, onError, options)
+```
+
+See the [API docs](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation.getCurrentPosition)
+for ```getCurrentPosition``` info on the parameters of the API.
 
 
 ## Recent Locations module

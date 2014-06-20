@@ -10,6 +10,14 @@
     <script src="../bower_components/sinonjs/sinon.js"></script>
     <script src="../bower_components/sinon-qunit/lib/sinon-qunit.js"></script>
 
+    <script>
+        window.navigator.geolocation = {
+            getCurrentPosition: sinon.spy()
+        }
+    </script>
+
+    <script src="../src/geolocation.js"></script>
+    <script src="./geolocation.js"></script>
     <script src="../src/recent_locations.js"></script>
     <script src="./recent_locations.js"></script>
     <script src="../src/api.js"></script>
