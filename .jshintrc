@@ -32,6 +32,8 @@
     "asyncTest": true,
     "start": true,
     "expect": true,
-    "locator": true
+    "locator": true,
+    "module": true,
+    "throws": true
   }
 }
