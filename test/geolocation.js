@@ -39,7 +39,7 @@ test("getCurrentPosition() proxies to Geolocation API call", function() {
 test("getCurrentPosition() uses default options", function() {
 
   var callback = function() {};
-  var expectedOptions = { timeout: 2000, maximumAge: 200 };
+  var expectedOptions = { timeout: 1000, maximumAge: 60, enableHighAccuracy: true };
 
   locator.core.geolocation.getCurrentPosition(callback, callback);
 
