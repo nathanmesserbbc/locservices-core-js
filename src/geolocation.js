@@ -1,0 +1,44 @@
+(function(global, factory) {
+  if (typeof define === "function" && define.amd) {
+    return define(factory);
+  } else {
+    if (typeof locator === "undefined") {
+      global.locator = { core: {}};
+    }
+    locator.core.geolocation = factory();
+  }
+}(this, function() {
+
+  // lazy evaluation to aid testing under phantomjs
+  function isSupported() {
+    return "geolocation" in navigator;
+  }
+
+  /**
+   * Get the current position
+   * @param {Function} onSuccess
+   * @param {Function} onError
+   * @param {Object} options
+   */
+  function getCurrentPosition(onSuccess, onError, options) {
+
+    options = options || {
+      timeout: 2000, // 2 seconds
+      maximumAge: 200 // results are cached for 200ms
+    };
+
+    // make it look like a PositionError
+    if (!isSupported()) {
+      onError({ code: 2, message: "The current browser does not support Geolocation" });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
+  }
+
+  return {
+    isSupported: isSupported(),
+    getCurrentPosition: getCurrentPosition
+  };
+
+}));
