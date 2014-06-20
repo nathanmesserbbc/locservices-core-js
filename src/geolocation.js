@@ -23,8 +23,8 @@
   function getCurrentPosition(onSuccess, onError, options) {
 
     options = options || {
-      timeout: 1000, // 2 seconds
-      maximumAge: 60, // results are cached for 200ms
+      timeout: 1000,
+      maximumAge: 60,
       enableHighAccuracy: true
     };
 
