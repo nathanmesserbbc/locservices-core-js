@@ -25,8 +25,8 @@ module.exports = function(grunt) {
 
     watch: {
       scripts: {
-        files: "**/*.js",
-        tasks: ["build"]
+        files: javascriptTargets,
+        tasks: ["jshint", "jscs", "test"]
       }
     },
 
@@ -94,6 +94,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask("build", ["jshint", "jscs", "test", "uglify"]);
   grunt.registerTask("test", ["connect", "qunit"]);
+  grunt.registerTask("travis", ["jshint", "jscs", "test"]);
   grunt.registerTask("default", "build");
 
 };
