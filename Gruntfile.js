@@ -77,7 +77,8 @@ module.exports = function(grunt) {
         files: {
           "dist/api.min.js": "src/api.js",
           "dist/shared.min.js": "src/shared.js",
-          "dist/geolocation.min.js": "src/geolocation.js"
+          "dist/geolocation.min.js": "src/geolocation.js",
+          "dist/recent_locations.min.js": "src/recent_locations.js"
         }
       }
     }
