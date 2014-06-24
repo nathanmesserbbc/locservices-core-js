@@ -1,12 +1,12 @@
-Locator CoreJS Modules
-====================
+LocServices Core JS Modules
+===========================
 
-[![Build Status](https://travis-ci.org/BBC-Location-Services/locator-core-js.svg)](https://travis-ci.org/BBC-Location-Services/locator-core-js)
+[![Build Status](https://travis-ci.org/BBC-Location-Services/locservices-core-js.svg)](https://travis-ci.org/BBC-Location-Services/locservices-core-js)
 
-* [Geolocation module](#geolocation-module)
-* [Recent Locations module](#recent-locations-module)
 * [API module](#api-module)
-* [Shared module](#shared-module)
+* [Preferred Location module](#preferred-location-module)
+* [Recent Locations module](#recent-locations-module)
+* [Geolocation module](#geolocation-module)
 
 Installation
 ------------
@@ -14,70 +14,6 @@ Installation
 The API component is available to install via Bower:
 
     bower install --save-dev BBC-Location-Services/locator-core-js#0.1.0
-
-
-## Geolocation module
-
-The geolocation module provides a light abstraction around the browsers'
-Geolocation API. To test if the browser supports the api, use;
-
-```
-locator.core.geolocation.isSupported
-```
-
-To obtain the users position, use;
-
-```
-locator.core.geolocation.getCurrentPosition(onSuccess, onError, options)
-```
-
-See the [API docs](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation.getCurrentPosition)
-for ```getCurrentPosition``` info on the parameters of the API.
-
-
-## Recent Locations module
-
-The recent locations module provides the functionality to store locations in an
-ordered set using a range of storage adapters. Currently, the only storage
-adapter available is the LocalStorageAdapter that will store the list in the
-browser's local storage.
-
-Usage
------
-
-Create a new instance;
-
-```
-var recentLocations = new locator.core.RecentLocations();
-```
-
-In order to check the current browser supports this module, use the ```isSupported()```
-method. Browsers that support local storage and JSON are currently supported.
-
-To add a location;
-
-```
-var location = { id: 1, name: "CF5", placeType: "postcode" };
-recentLocations.add(location);
-```
-
-To get all locations in order;
-
-```
-recentLocations.all(); // will return an Array
-```
-
-To remove a location
-
-```
-recentLocations.remove(1234); // specify a location id
-```
-
-To clear all location history
-
-```
-recentLocations.clear();
-```
 
 ## API module
 
@@ -330,6 +266,72 @@ This returns the following cookie details for use in the locserv cookie:
   expires: "1434184279"
 }
 ````
+
+
+## Recent Locations module
+
+The recent locations module provides the functionality to store locations in an
+ordered set using a range of storage adapters. Currently, the only storage
+adapter available is the LocalStorageAdapter that will store the list in the
+browser's local storage.
+
+Usage
+-----
+
+Create a new instance;
+
+```
+var recentLocations = new locator.core.RecentLocations();
+```
+
+In order to check the current browser supports this module, use the ```isSupported()```
+method. Browsers that support local storage and JSON are currently supported.
+
+To add a location;
+
+```
+var location = { id: 1, name: "CF5", placeType: "postcode" };
+recentLocations.add(location);
+```
+
+To get all locations in order;
+
+```
+recentLocations.all(); // will return an Array
+```
+
+To remove a location
+
+```
+recentLocations.remove(1234); // specify a location id
+```
+
+To clear all location history
+
+```
+recentLocations.clear();
+```
+
+
+
+## Geolocation module
+
+The geolocation module provides a light abstraction around the browsers'
+Geolocation API. To test if the browser supports the api, use;
+
+```
+locator.core.geolocation.isSupported
+```
+
+To obtain the users position, use;
+
+```
+locator.core.geolocation.getCurrentPosition(onSuccess, onError, options)
+```
+
+See the [API docs](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation.getCurrentPosition)
+for ```getCurrentPosition``` info on the parameters of the API.
+
 
 ### RequireJS
 
