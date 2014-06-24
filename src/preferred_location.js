@@ -5,24 +5,24 @@
     if (typeof locator === "undefined") {
       global.locator = { core: {}};
     }
-    locator.core.Shared = factory();
+    locator.core.PreferredLocation = factory();
   }
 }(this, function() {
 
   "use strict";
 
-  function Shared() {
-    this.name = "locserve";
+  function PreferredLocation() {
+    this.name = "locserv";
   }
 
-  Shared.prototype.isSet = function() {
+  PreferredLocation.prototype.isSet = function() {
     if (typeof this.get() !== "undefined") {
       return true;
     }
     return false;
   };
 
-  Shared.prototype.get = function() {
+  PreferredLocation.prototype.get = function() {
     var _name, ca, i, c;
 
     _name = this.name + "=";
@@ -39,7 +39,7 @@
     }
   };
 
-  Shared.prototype.set = function(value, exdays, domain, path) {
+  PreferredLocation.prototype.set = function(value, exdays, domain, path) {
     var date, cookieString;
 
     cookieString = this.name + "=" + value;
@@ -62,10 +62,10 @@
     document.cookie = cookieString;
   };
 
-  Shared.prototype.unset = function() {
+  PreferredLocation.prototype.unset = function() {
     this.set("0", -1);
   };
 
-  return Shared;
+  return PreferredLocation;
 
 }));

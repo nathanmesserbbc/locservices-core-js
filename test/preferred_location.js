@@ -1,8 +1,8 @@
 var shared;
 
-module("Shared", {
+module("Preferred Location", {
   setup: function() {
-    shared = new locator.core.Shared();
+    shared = new locator.core.PreferredLocation();
   }, teardown: function() {
     shared.unset();
   }

@@ -1,7 +1,7 @@
 {
-  "name": "locator-core-js",
+  "name": "locservices-core-js",
   "version": "0.0.1",
-  "description": "A library for making requests to the locator API",
+  "description": "A library providing BBC location data access modules.",
   "author": {
     "name": "BBC Location Services Team"
   },
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/BBC-Location-Services/locator-core-api.git"
+    "url": "https://github.com/BBC-Location-Services/locservices-core-js.git"
   },
   "dependencies": {},
   "devDependencies": {
