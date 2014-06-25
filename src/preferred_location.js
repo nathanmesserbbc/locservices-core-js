@@ -52,7 +52,7 @@
     return window.location.hostname;
   };
 
- /**
+  /**
    * Get the current cookie string. This is primarily used for stubbing
    * during for test purposes.
    *
