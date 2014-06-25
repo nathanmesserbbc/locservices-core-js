@@ -2,7 +2,8 @@ var api;
 
 module("API", {
   setup: function() {
-    api = new locator.core.API({ domain: "http://localhost:9999/test/fixtures" });
+    api = new locator.core.API();
+    api._base_uri = "http://localhost:9999/test/fixtures";
   },
   teardown: function() {
   }
@@ -10,25 +11,18 @@ module("API", {
 
 test("Constructor defaults to live locator API", function() {
   api = new locator.core.API();
-  equal(api.domain, "//open.live.bbc.co.uk");
+  equal(api._base_uri, "http://open.live.bbc.co.uk/locator");
 });
 
 test("Constructor sets env", function() {
-  var expectedEnv = "foo";
-  api = new locator.core.API({ env: expectedEnv });
-  equal(api.env, expectedEnv);
+  api = new locator.core.API({ env: "foo" });
+  equal(api._base_uri, "http://open.foo.bbc.co.uk/locator");
 });
 
 test("Constructor sets domain using env", function() {
   var expectedEnv = "foo";
   api = new locator.core.API({ env: expectedEnv });
-  equal(api.domain, "//open." + expectedEnv + ".bbc.co.uk");
-});
-
-test("Constructor sets domain", function() {
-  var expectedDomain = "locator.foo.org";
-  api = new locator.core.API({ domain: expectedDomain });
-  equal(api.domain, expectedDomain);
+  equal(api._base_uri, "http://open." + expectedEnv + ".bbc.co.uk/locator");
 });
 
 asyncTest("#getLocation should call success on successful request", function() {

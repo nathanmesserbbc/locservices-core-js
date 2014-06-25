@@ -12,14 +12,38 @@
   "use strict";
 
   /**
+   * Apply default options to an object.
+   *
+   * @param {Object} objA the default options object
+   * @param {Object} objB the object that contains options to override the defaults
+   * @returns {*}
+   */
+  function applyDefaults(objA, objB) {
+    var k;
+
+    for (k in objA) {
+      if (objA.hasOwnProperty(k) && !objB.hasOwnProperty(k)) {
+        objB[k] = objA[k];
+      }
+    }
+
+    return objB;
+  }
+
+  /**
    * Represents an API.
    * @constructor
    * @param {object} options - Options to configure instance
    */
   function API(options) {
-    options = options || {};
-    this.env = options.env || "live";
-    this.domain = options.domain || "//open." + this.env + ".bbc.co.uk";
+
+    // apply default options
+    this._options = applyDefaults({
+      env: "live",
+      protocol: "http"
+    }, options || {});
+
+    this._base_uri = this._options.protocol + "://open." + this._options.env + ".bbc.co.uk/locator";
   }
 
   /**
@@ -37,7 +61,7 @@
       details = "/details/" + options.detailTypes.join(",");
       options.params.vv = 2;
     }
-    request(this.domain + "/locator/locations/" + encodeURIComponent(id) + details, options, type);
+    request(this._base_uri + "/locations/" + encodeURIComponent(id) + details, options, type);
   };
 
   /**
@@ -50,7 +74,7 @@
     options.params = options.params || {};
     options.params.s = term;
 
-    request(this.domain + "/locator/locations", options, "search");
+    request(this._base_uri + "/locations", options, "search");
   };
 
   /**
@@ -63,7 +87,7 @@
     options.params = options.params || {};
     options.params.s = term;
     options.params.a = "true";
-    request(this.domain + "/locator/locations", options, "autoComplete");
+    request(this._base_uri + "/locations", options, "autoComplete");
   };
 
   /**
@@ -78,7 +102,7 @@
     options.params.lo = lon;
     options.params.la = lat;
 
-    request(this.domain + "/locator/locations", options, "reverseGeocode");
+    request(this._base_uri + "/locations", options, "reverseGeocode");
   };
 
   /**
