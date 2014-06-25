@@ -19,10 +19,19 @@ test("Constructor sets env", function() {
   equal(api._base_uri, "http://open.foo.bbc.co.uk/locator");
 });
 
-test("Constructor sets domain using env", function() {
+test("Constructor sets base_uri using env", function() {
   var expectedEnv = "foo";
   api = new locator.core.API({ env: expectedEnv });
   equal(api._base_uri, "http://open." + expectedEnv + ".bbc.co.uk/locator");
+});
+
+test("Constructor uses http as the default protocol to construct the base uri", function() {
+  equal(api._base_uri.substr(0, 7), "http://");
+});
+
+test("Constructor uses options protocol to construct the base uri", function() {
+  api = new locator.core.API({ protocol: "https" });
+  equal(api._base_uri.substr(0, 8), "https://");
 });
 
 asyncTest("#getLocation should call success on successful request", function() {
