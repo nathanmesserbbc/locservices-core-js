@@ -24,10 +24,7 @@
    * @return {Boolean}
    */
   PreferredLocation.prototype.isSet = function() {
-    if (this.get() !== null) {
-      return true;
-    }
-    return false;
+    return (null !== this.get());
   };
 
   /**
@@ -62,7 +59,7 @@
    * @return {String}
    */
   PreferredLocation.prototype.getCookieString = function() {
-    return document.cookie;
+    return window.document.cookie;
   };
 
   /**
@@ -73,14 +70,13 @@
    * @return void
    */
   PreferredLocation.prototype.setCookieString = function(value) {
-    document.cookie = value;
+    window.document.cookie = value;
   };
 
   /**
    * Returns the domain that should be used when setting the locserv cookie by 
    * checking if the url is a *.bbc.co.uk or *.bbc.com domain.
    *
-   * @param {String} hostname the hostname to check
    * @return String|Boolean
    */
   PreferredLocation.prototype.getCookieDomain = function() {
@@ -137,7 +133,7 @@
       };
     };
 
-    cookie = cookieString.match(cookieName + "=(.*?)(;|$)");
+    cookie = cookieString.match(new RegExp(cookieName + "=(.*?)(;|$)"));
     if (!cookie || cookie.length < 2){
       return null;
     }
