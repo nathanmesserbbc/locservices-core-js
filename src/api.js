@@ -40,6 +40,7 @@
   function API(options) {
 
     var k;
+    var palEnv = "";
 
     this._defaultParams = {};
 
@@ -58,7 +59,12 @@
       }
     }
 
+    if (this._options.env !== "live") {
+      palEnv = "." + this._options.env;
+    }
+
     this._base_uri = this._options.protocol + "://open." + this._options.env + ".bbc.co.uk/locator";
+    this._palBaseUri = this._options.protocol + "://www" + palEnv + ".bbc.co.uk";
   }
 
   /**
@@ -180,7 +186,7 @@
     options.params = options.params || {};
     options.params.id = id;
 
-    request("http://pal.sandbox.dev.bbc.co.uk/locator/default/shared/location.json", options, "cookie");
+    request(this._palBaseUri + "/locator/default/shared/location.json", options, "cookie");
   };
 
   /**
