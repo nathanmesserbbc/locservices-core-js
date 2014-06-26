@@ -24,7 +24,7 @@
    * @return {Boolean}
    */
   PreferredLocation.prototype.isSet = function() {
-    return (null !== this.get());
+    return (null !== this.getLocServCookie());
   };
 
   /**
@@ -37,7 +37,7 @@
     if (false === cookieDomain) {
       return false;
     }
-    this.setCookieString(
+    this.setDocumentCookie(
       cookieName + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT; Path=/; domain=" + cookieDomain + ";"
     );
     return true;
@@ -58,7 +58,7 @@
    *
    * @return {String}
    */
-  PreferredLocation.prototype.getCookieString = function() {
+  PreferredLocation.prototype.getDocumentCookie = function() {
     return window.document.cookie;
   };
 
@@ -69,7 +69,7 @@
    * @param {String} value The value to set the cookie to
    * @return void
    */
-  PreferredLocation.prototype.setCookieString = function(value) {
+  PreferredLocation.prototype.setDocumentCookie = function(value) {
     window.document.cookie = value;
   };
 
@@ -98,18 +98,29 @@
   };
 
   /**
+   * Get the locserv component of the document cookie.
+   *
+   * @return String
+   */
+  PreferredLocation.prototype.getLocServCookie = function() {
+    var documentCookie, locServCookie;
+    documentCookie = this.getDocumentCookie();
+
+    locServCookie = documentCookie.match(new RegExp(cookieName + "=(.*?)(;|$)"));
+    if (!locServCookie || locServCookie.length < 2){
+      return null;
+    }
+
+    return locServCookie[1];
+  };
+
+  /**
    * Get the current users location by accessing the cookie.
    *
    * @return null|{Object}
    */
   PreferredLocation.prototype.get = function() {
-    var location, cookieString, cookie, domains, domain, getValues, index;
-
-    if (this.cookieLocation) {
-      return this.cookieLocation;
-    }
-
-    cookieString = this.getCookieString();
+    var location, locServCookie, domains, domain, getValues, index;
 
     getValues = function(store) {
       var index;
@@ -133,8 +144,8 @@
       };
     };
 
-    cookie = cookieString.match(new RegExp(cookieName + "=(.*?)(;|$)"));
-    if (!cookie || cookie.length < 2){
+    locServCookie = this.getLocServCookie();
+    if (!locServCookie) {
       return null;
     }
 
@@ -146,7 +157,7 @@
       weather : null
     };
 
-    domains = cookie[1].substr(2).split("@");
+    domains = locServCookie.substr(2).split("@");
     for (index = 0; index < domains.length; index++) {
       domain = getValues(domains[index]);
       if ("l" === domain.name) {
@@ -170,9 +181,7 @@
       }
     }
 
-    this.cookieLocation = location;
-
-    return this.cookieLocation;
+    return location;
 
   };
 
@@ -206,7 +215,7 @@
         cookieString += "expires=" + cookieExpires  + "; ";
         cookieString += "domain=" + cookieDomain + "; ";
         cookieString += "path=" + cookiePath + ";";
-        self.setCookieString(cookieString);
+        self.setDocumentCookie(cookieString);
         if (typeof options.success === "function") {
           options.success(self.get());
         }
