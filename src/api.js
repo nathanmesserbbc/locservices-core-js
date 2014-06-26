@@ -99,7 +99,7 @@
    */
   API.prototype.getLocation = function(id, options) {
 
-    var detail_path = "";
+    var detailPath = "";
     var type = "location";
 
     options.params = applyDefaults(
@@ -109,11 +109,11 @@
 
     if (options.detailTypes && Object.prototype.toString.call(options.detailTypes) === "[object Array]") {
       type = "details";
-      detail_path = "/details/" + options.detailTypes.join(",");
+      detailPath = "/details/" + options.detailTypes.join(",");
       options.params.vv = 2;
     }
 
-    var queryUri = this._baseUri + "/locations/" + encodeURIComponent(id) + detail_path;
+    var queryUri = this._baseUri + "/locations/" + encodeURIComponent(id) + detailPath;
 
     request(queryUri, options, type);
   };
