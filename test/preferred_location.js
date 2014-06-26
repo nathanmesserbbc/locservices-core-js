@@ -33,16 +33,16 @@ test("unset() returns true if domain is valid", function() {
   equal(true, actualValue);
 });
 
-test("unset() should pass an expired string to setCookieString()", function() {
+test("unset() should pass an expired string to setDocumentCookie()", function() {
   var actualValue;
-  var stubSetCookieString;
+  var stubSetDocumentCookie;
   var stubGetCookieDomain;
   stubGetCookieDomain = sinon.stub(preferredLocation, "getCookieDomain");
   stubGetCookieDomain.returns(".bbc.co.uk");
-  stubSetCookieString = sinon.stub(preferredLocation, "setCookieString");
+  stubSetDocumentCookie = sinon.stub(preferredLocation, "setDocumentCookie");
   preferredLocation.unset();
   equal(
-    stubSetCookieString.args[0][0], 
+    stubSetDocumentCookie.args[0][0], 
     "locserv=; expires=Thu, 01 Jan 1970 00:00:01 GMT; Path=/; domain=.bbc.co.uk;", 
     "Cookie was not unset"
   ); 
@@ -54,10 +54,23 @@ test("getHostname() returns a string", function() {
   equal(typeof preferredLocation.getHostname(), "string");
 });
 
-// getCookieString()
+// getDocumentCookie()
 
-test("getCookieString() returns a string", function() {
-  equal(typeof preferredLocation.getCookieString(), "string");
+test("getDocumentString() returns a string", function() {
+  equal(typeof preferredLocation.getDocumentCookie(), "string");
+});
+
+// getLocServCookie()
+
+test("getLocServCookie() should return null if cookie does not exist", function() {
+  var actualValue;
+  var stub;
+  stub = sinon.stub(preferredLocation, "getDocumentCookie");
+  stub.returns("foo=123");
+  actualValue = preferredLocation.getLocServCookie();
+  equal(actualValue, null, 
+    "getLocServCookie() does not return null when locserv cookie is not set"
+  );
 });
 
 // getCookieDomain()
@@ -112,21 +125,11 @@ test("getCookieDomain() returns false for null", function() {
 
 // get()
 
-test("get() should return this.cookieLocation if set", function() {
-  var expectedValue = "foo";
-  var actualValue;
-  preferredLocation.cookieLocation = expectedValue;
-  actualValue = preferredLocation.get();
-  equal(actualValue, expectedValue, 
-    "get() does not return a previously parsed location"
-  );
-});
-
 test("get() should return null if cookie does not exist", function() {
   var actualValue;
   var stub;
-  stub = sinon.stub(preferredLocation, "getCookieString");
-  stub.returns("foo=123");
+  stub = sinon.stub(preferredLocation, "getLocServCookie");
+  stub.returns(null);
   actualValue = preferredLocation.get();
   equal(actualValue, null, 
     "get() does not return null when cookie is not set"
@@ -153,8 +156,8 @@ test("get() should return the expected location object", function() {
       name : "Dorking"
     }
   };
-  stub = sinon.stub(preferredLocation, "getCookieString");
-  stub.returns("locserv=1#l1#i=6690828:n=Pontypridd:h=w@w1#i=4172:p=Dorking@d1#1=l:2=e:3=e:4=2.41@n1#r=66");
+  stub = sinon.stub(preferredLocation, "getLocServCookie");
+  stub.returns("1#l1#i=6690828:n=Pontypridd:h=w@w1#i=4172:p=Dorking@d1#1=l:2=e:3=e:4=2.41@n1#r=66");
   
   actualLocation = preferredLocation.get();
   deepEqual(actualLocation, expectedLocation, 
@@ -183,7 +186,7 @@ test("set() should pass locationId to api.getCookie", function() {
   );
 });
 
-test("set() should pass expected cookie string to setCookieString()", function() {
+test("set() should pass expected cookie string to setDocumentCookie()", function() {
   var options;
   var expectedCookieString;
   var actualCookieString;
@@ -195,7 +198,7 @@ test("set() should pass expected cookie string to setCookieString()", function()
       expires: "1435223278"
     });
   };
-  spy = sinon.spy(preferredLocation, "setCookieString");
+  spy = sinon.spy(preferredLocation, "setDocumentCookie");
   preferredLocation.set(1);
   actualCookieString = spy.args[0][0];
   equal(actualCookieString, expectedCookieString, "does not set the expected cookie string");
