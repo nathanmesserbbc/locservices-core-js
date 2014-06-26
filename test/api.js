@@ -3,7 +3,7 @@ var api;
 module("API", {
   setup: function() {
     api = new locator.core.API();
-    api._base_uri = "http://localhost:9999/test/fixtures";
+    api._baseUri = "http://localhost:9999/test/fixtures";
   },
   teardown: function() {
   }
@@ -11,18 +11,18 @@ module("API", {
 
 test("Constructor defaults to live locator API", function() {
   api = new locator.core.API();
-  equal(api._base_uri, "http://open.live.bbc.co.uk/locator");
+  equal(api._baseUri, "http://open.live.bbc.co.uk/locator");
 });
 
 test("Constructor sets env", function() {
   api = new locator.core.API({ env: "foo" });
-  equal(api._base_uri, "http://open.foo.bbc.co.uk/locator");
+  equal(api._baseUri, "http://open.foo.bbc.co.uk/locator");
 });
 
 test("Constructor sets base_uri using env", function() {
   var expectedEnv = "foo";
   api = new locator.core.API({ env: expectedEnv });
-  equal(api._base_uri, "http://open." + expectedEnv + ".bbc.co.uk/locator");
+  equal(api._baseUri, "http://open." + expectedEnv + ".bbc.co.uk/locator");
 });
 
 test("Default PAL base uri is live", function() {
@@ -35,12 +35,12 @@ test("Override PAL base uri in constructor", function() {
 });
 
 test("Constructor uses http as the default protocol to construct the base uri", function() {
-  equal(api._base_uri.substr(0, 7), "http://");
+  equal(api._baseUri.substr(0, 7), "http://");
 });
 
 test("Constructor uses options protocol to construct the base uri", function() {
   api = new locator.core.API({ protocol: "https" });
-  equal(api._base_uri.substr(0, 8), "https://");
+  equal(api._baseUri.substr(0, 8), "https://");
 });
 
 test("default query parameters can be built from constructor options", function() {
@@ -75,7 +75,7 @@ asyncTest("#getLocation uses global query parameters", function() {
     language: "en-GB",
     rows: 10
   });
-  api._base_uri = "http://localhost:9999/test/fixtures";
+  api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.getLocation(12345, {
     success: function(data) {
@@ -91,7 +91,7 @@ asyncTest("#getLocation uses global query parameters", function() {
 asyncTest("#getLocation overrides global parameters via its options", function() {
 
   api = new locator.core.API({ vv: 1 });
-  api._base_uri = "http://localhost:9999/test/fixtures";
+  api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.getLocation(123, {
     vv: 2, // <=== Override view version
@@ -152,7 +152,7 @@ asyncTest("#search overrides global parameters via its options", function() {
   expect(2);
 
   api = new locator.core.API({ placetypes: ["settlement", "airport"] });
-  api._base_uri = "http://localhost:9999/test/fixtures";
+  api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.search("Cardiff", {
     placetypes: ["road"],
@@ -191,7 +191,7 @@ asyncTest("#autoComplete overrides global parameters via its options", function(
   expect(1);
 
   api = new locator.core.API({ language: "en-GB" });
-  api._base_uri = "http://localhost:9999/test/fixtures";
+  api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.autoComplete("Card", {
     language: "cy-GB",
@@ -229,7 +229,7 @@ asyncTest("#reverseGeocode overrides global parameters via its options", functio
   expect(1);
 
   api = new locator.core.API({ language: "en-GB" });
-  api._base_uri = "http://localhost:9999/test/fixtures";
+  api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.reverseGeocode(0, 0, {
     language: "cy-GB",

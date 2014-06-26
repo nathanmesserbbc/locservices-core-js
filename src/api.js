@@ -63,7 +63,7 @@
       palEnv = "." + this._options.env;
     }
 
-    this._base_uri = this._options.protocol + "://open." + this._options.env + ".bbc.co.uk/locator";
+    this._baseUri = this._options.protocol + "://open." + this._options.env + ".bbc.co.uk/locator";
     this._palBaseUri = this._options.protocol + "://www" + palEnv + ".bbc.co.uk";
   }
 
@@ -113,7 +113,7 @@
       options.params.vv = 2;
     }
 
-    var queryUri = this._base_uri + "/locations/" + encodeURIComponent(id) + detail_path;
+    var queryUri = this._baseUri + "/locations/" + encodeURIComponent(id) + detail_path;
 
     request(queryUri, options, type);
   };
@@ -133,7 +133,7 @@
 
     options.params.s = term;
 
-    request(this._base_uri + "/locations", options, "search");
+    request(this._baseUri + "/locations", options, "search");
   };
 
   /**
@@ -152,7 +152,7 @@
     options.params.s = term;
     options.params.a = "true";
 
-    request(this._base_uri + "/locations", options, "autoComplete");
+    request(this._baseUri + "/locations", options, "autoComplete");
   };
 
   /**
@@ -172,7 +172,7 @@
     options.params.lo = lon;
     options.params.la = lat;
 
-    request(this._base_uri + "/locations", options, "reverseGeocode");
+    request(this._baseUri + "/locations", options, "reverseGeocode");
   };
 
   /**
