@@ -34,6 +34,17 @@ test("Constructor uses options protocol to construct the base uri", function() {
   equal(api._base_uri.substr(0, 8), "https://");
 });
 
+test("default query parameters can be built from constructor options", function() {
+
+  api = new locator.core.API({
+    vv: 3,
+    env: "test"
+  });
+
+  equal(Object.keys(api._defaultParams).length, 1, "One parameter applied by default");
+  equal(api._defaultParams.vv, 3, "vv=3 default parameter applied");
+});
+
 test("Query parameters are built from constructor options", function() {
 
   api = new locator.core.API({
@@ -44,7 +55,7 @@ test("Query parameters are built from constructor options", function() {
     protocol: "https"
   });
 
-  equal(Object.keys(api._globalQueryParameters).length, 3, "Three query parameters found from options");
+  equal(Object.keys(api._defaultParams).length, 3, "Three query parameters found from options");
 });
 
 asyncTest("#getLocation uses global query parameters", function() {
@@ -68,10 +79,25 @@ asyncTest("#getLocation uses global query parameters", function() {
   });
 });
 
+asyncTest("#getLocation overrides global parameters via its options", function() {
+
+  api = new locator.core.API({ vv: 1 });
+  api._base_uri = "http://localhost:9999/test/fixtures";
+
+  api.getLocation(123, {
+    vv: 2, // <=== Override view version
+    success: function(data) {
+      var uri = data.location.locations;
+      ok(uri.indexOf("vv=2") > -1, "vv=2 override");
+      start();
+    }
+  });
+});
+
 asyncTest("#getLocation should call success on successful request", function() {
   expect(1);
   api.getLocation(2643743, {
-    success: function(data) {
+    success: function() {
       ok(true, "Test correctly called success handler");
       start();
     }
@@ -82,7 +108,7 @@ asyncTest("#getLocation should call error on request", function() {
   expect(1);
   api.getLocation(2643743, {
     throwError: "true",
-    error: function(event) {
+    error: function() {
       ok(true, "Test correctly called error handler");
       start();
     }
@@ -100,25 +126,31 @@ asyncTest("#getLocation with detailTypes array should call success on successful
   });
 });
 
-asyncTest("#getLocation with non-array detailTypes should not add detail types to request", function() {
-  expect(1);
-  api.getLocation(2643743, {
-    detailTypes: "foo",
-    success: function(data) {
-      var uri = data.location.metadata.location;
-      equal(uri.indexOf("foo"), -1, "Test did not pass detailTypes when not an array.");
-      start();
-    }
-  });
-});
-
 asyncTest("#getLocation with detailTypes should call error on request", function() {
   expect(1);
   api.getLocation(2643743, {
     detailTypes: ["tv", "radio"],
     throwError: "true",
-    error: function(event) {
+    error: function() {
       ok(true, "Test correctly called error handler");
+      start();
+    }
+  });
+});
+
+asyncTest("#search overrides global parameters via its options", function() {
+
+  expect(2);
+
+  api = new locator.core.API({ placetypes: ["settlement", "airport"] });
+  api._base_uri = "http://localhost:9999/test/fixtures";
+
+  api.search("Cardiff", {
+    placetypes: ["road"],
+    success: function(data) {
+      var uri = data.results;
+      ok(uri.indexOf("placetypes=road") > -1, "placetypes=road override");
+      ok(uri.indexOf("settlement,airport") === -1, "original placeytpes non existent in uri");
       start();
     }
   });
@@ -127,7 +159,7 @@ asyncTest("#getLocation with detailTypes should call error on request", function
 asyncTest("#search should call success on successful request", function() {
   expect(1);
   api.search("Cardiff", {
-    success: function(data) {
+    success: function() {
       ok(true, "Test correctly called success handler");
       start();
     }
@@ -138,8 +170,25 @@ asyncTest("#search should call error on request", function() {
   expect(1);
   api.search("Cardiff", {
     throwError: "true",
-    error: function(event) {
+    error: function() {
       ok(true, "Test correctly called error handler");
+      start();
+    }
+  });
+});
+
+asyncTest("#autoComplete overrides global parameters via its options", function() {
+
+  expect(1);
+
+  api = new locator.core.API({ language: "en-GB" });
+  api._base_uri = "http://localhost:9999/test/fixtures";
+
+  api.autoComplete("Card", {
+    language: "cy-GB",
+    success: function(data) {
+      var uri = data.results;
+      ok(uri.indexOf("language=cy-GB") > -1, "language override");
       start();
     }
   });
@@ -148,7 +197,7 @@ asyncTest("#search should call error on request", function() {
 asyncTest("#autoComplete should call success on successful request", function() {
   expect(1);
   api.autoComplete("Card", {
-    success: function(data) {
+    success: function() {
       ok(true, "Test correctly called success handler");
       start();
     }
@@ -159,8 +208,25 @@ asyncTest("#autoComplete should call error on request", function() {
   expect(1);
   api.autoComplete("Card", {
     throwError: "true",
-    error: function(event) {
+    error: function() {
       ok(true, "Test correctly called error handler");
+      start();
+    }
+  });
+});
+
+asyncTest("#reverseGeocode overrides global parameters via its options", function() {
+
+  expect(1);
+
+  api = new locator.core.API({ language: "en-GB" });
+  api._base_uri = "http://localhost:9999/test/fixtures";
+
+  api.reverseGeocode(0, 0, {
+    language: "cy-GB",
+    success: function(data) {
+      var uri = data.results;
+      ok(uri.indexOf("language=cy-GB") > -1, "language override");
       start();
     }
   });
@@ -169,7 +235,7 @@ asyncTest("#autoComplete should call error on request", function() {
 asyncTest("#reverseGeocode should call success on successful request", function() {
   expect(1);
   api.reverseGeocode(3.5, -51.2, {
-    success: function(data) {
+    success: function() {
       ok(true, "Test correctly called success handler");
       start();
     }
@@ -180,7 +246,7 @@ asyncTest("#reverseGeocode should call error on request", function() {
   expect(1);
   api.reverseGeocode(5.1, -51.2, {
     throwError: "true",
-    error: function(event) {
+    error: function() {
       ok(true, "Test correctly called success handler");
       start();
     }

@@ -12,13 +12,15 @@
   "use strict";
 
   /**
-   * Apply default options to an object.
+   * Apply default options to an object. If objA defines a property that objB
+   * does not have, then objB will be assign it.
    *
    * @param {Object} objA - the default options object
    * @param {Object} objB - the object that contains options to override the defaults
-   * @returns {*}
+   * @returns {Object}
    */
   function applyDefaults(objA, objB) {
+
     var k;
 
     for (k in objA) {
@@ -37,13 +39,24 @@
    */
   function API(options) {
 
+    var k;
+
+    this._defaultParams = {};
+
     // apply default options
     this._options = applyDefaults({
       env: "live",
       protocol: "http"
     }, options || {});
 
-    this._globalQueryParameters = getQueryParametersFromOptions(this._options);
+    // any option that is a string|number and is not a module option will
+    // be treated as a default query parameter to use against an endpoint.
+    var defaultParams = createQueryParametersFromObject(this._options);
+    for (k in defaultParams) {
+      if (defaultParams.hasOwnProperty(k) && k !== "env" && k !== "protocol") {
+        this._defaultParams[k] = this._options[k];
+      }
+    }
 
     this._base_uri = this._options.protocol + "://open." + this._options.env + ".bbc.co.uk/locator";
   }
@@ -54,31 +67,17 @@
    * @param {Object} options
    * @return {Object}
    */
-  function getQueryParametersFromOptions(options) {
+  function createQueryParametersFromObject(options) {
 
     var params = {};
-    var paramNames = ["vv", "throwError", "language", "rows"];
     var k;
-    var name;
 
-    if (options.lat) {
-      params.la = options.lat;
-    }
-
-    if (options.lon) {
-      params.lo = options.lon;
-    }
-
-    if (options.searchTerm) {
-      params.s = options.searchTerm;
-    }
-
-    // find all the other params
-    for (k in paramNames) {
-      if (paramNames.hasOwnProperty(k)) {
-        name = paramNames[k];
-        if (options.hasOwnProperty(name) && !params.hasOwnProperty(name)) {
-          params[name] = options[name];
+    for (k in options) {
+      if (options.hasOwnProperty(k)) {
+        if ((typeof options[k]).match(/string|number/)) {
+          params[k] = options[k];
+        } else if (Object.prototype.toString.call(options[k]) === "[object Array]") {
+          params[k] = options[k].join(",");
         }
       }
     }
@@ -98,8 +97,8 @@
     var type = "location";
 
     options.params = applyDefaults(
-      this._globalQueryParameters,
-      getQueryParametersFromOptions(options)
+      this._defaultParams,
+      createQueryParametersFromObject(options || {})
     );
 
     if (options.detailTypes && Object.prototype.toString.call(options.detailTypes) === "[object Array]") {
@@ -121,7 +120,11 @@
    */
   API.prototype.search = function(term, options) {
 
-    options.params = getQueryParametersFromOptions(options || {});
+    options.params = applyDefaults(
+      this._defaultParams,
+      createQueryParametersFromObject(options || {})
+    );
+
     options.params.s = term;
 
     request(this._base_uri + "/locations", options, "search");
@@ -134,9 +137,15 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.autoComplete = function(term, options) {
-    options.params = getQueryParametersFromOptions(options || {});
+
+    options.params = applyDefaults(
+      this._defaultParams,
+      createQueryParametersFromObject(options || {})
+    );
+
     options.params.s = term;
     options.params.a = "true";
+
     request(this._base_uri + "/locations", options, "autoComplete");
   };
 
@@ -148,7 +157,12 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.reverseGeocode = function(lat, lon, options) {
-    options.params = getQueryParametersFromOptions(options || {});
+
+    options.params = applyDefaults(
+      this._defaultParams,
+      createQueryParametersFromObject(options || {})
+    );
+
     options.params.lo = lon;
     options.params.la = lat;
 
@@ -162,6 +176,7 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error'
    */
   API.prototype.getCookie = function(id, options) {
+
     options.params = options.params || {};
     options.params.id = id;
 
