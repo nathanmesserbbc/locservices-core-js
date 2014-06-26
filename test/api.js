@@ -34,6 +34,40 @@ test("Constructor uses options protocol to construct the base uri", function() {
   equal(api._base_uri.substr(0, 8), "https://");
 });
 
+test("Query parameters are built from constructor options", function() {
+
+  api = new locator.core.API({
+    vv: 2,
+    language: "en-GB",
+    rows: 10,
+    env: "live",
+    protocol: "https"
+  });
+
+  equal(Object.keys(api._globalQueryParameters).length, 3, "Three query parameters found from options");
+});
+
+asyncTest("#getLocation uses global query parameters", function() {
+  expect(3);
+
+  api = new locator.core.API({
+    vv: 2,
+    language: "en-GB",
+    rows: 10
+  });
+  api._base_uri = "http://localhost:9999/test/fixtures";
+
+  api.getLocation(12345, {
+    success: function(data) {
+      var uri = data.location.locations;
+      ok(uri.indexOf("rows=10") > -1, "rows=10 added to query");
+      ok(uri.indexOf("language=en-GB") > -1, "language=en-GB added to query");
+      ok(uri.indexOf("vv=2") > -1, "vv=2 added to query");
+      start();
+    }
+  });
+});
+
 asyncTest("#getLocation should call success on successful request", function() {
   expect(1);
   api.getLocation(2643743, {

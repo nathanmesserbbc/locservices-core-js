@@ -43,6 +43,8 @@
       protocol: "http"
     }, options || {});
 
+    this._globalQueryParameters = getQueryParametersFromOptions(this._options);
+
     this._base_uri = this._options.protocol + "://open." + this._options.env + ".bbc.co.uk/locator";
   }
 
@@ -95,7 +97,10 @@
     var detail_path = "";
     var type = "location";
 
-    options.params = getQueryParametersFromOptions(options);
+    options.params = applyDefaults(
+      this._globalQueryParameters,
+      getQueryParametersFromOptions(options)
+    );
 
     if (options.detailTypes && Object.prototype.toString.call(options.detailTypes) === "[object Array]") {
       type = "details";
