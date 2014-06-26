@@ -14,8 +14,8 @@
   /**
    * Apply default options to an object.
    *
-   * @param {Object} objA the default options object
-   * @param {Object} objB the object that contains options to override the defaults
+   * @param {Object} objA - the default options object
+   * @param {Object} objB - the object that contains options to override the defaults
    * @returns {*}
    */
   function applyDefaults(objA, objB) {
@@ -47,21 +47,65 @@
   }
 
   /**
+   * Return a map of query parameter name => values from an options object
+   *
+   * @param {Object} options
+   * @return {Object}
+   */
+  function getQueryParametersFromOptions(options) {
+
+    var params = {};
+    var paramNames = ["vv", "throwError", "language", "rows"];
+    var k;
+    var name;
+
+    if (options.lat) {
+      params.la = options.lat;
+    }
+
+    if (options.lon) {
+      params.lo = options.lon;
+    }
+
+    if (options.searchTerm) {
+      params.s = options.searchTerm;
+    }
+
+    // find all the other params
+    for (k in paramNames) {
+      if (paramNames.hasOwnProperty(k)) {
+        name = paramNames[k];
+        if (options.hasOwnProperty(name) && !params.hasOwnProperty(name)) {
+          params[name] = options[name];
+        }
+      }
+    }
+
+    return params;
+  }
+
+  /**
    * Returns a single location object via it's GeonameID or Postcode.
    *
-   * @param {(string|number)} id - A Geoname ID or valid postcode.
-   * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
+   * @param {String|Number} id - A Geoname ID or valid postcode.
+   * @param {Object} [options] -
    */
   API.prototype.getLocation = function(id, options) {
-    var details = "",
-        type = "location";
-    options.params = options.params || {};
+
+    var detail_path = "";
+    var type = "location";
+
+    options.params = getQueryParametersFromOptions(options);
+
     if (options.detailTypes && Object.prototype.toString.call(options.detailTypes) === "[object Array]") {
       type = "details";
-      details = "/details/" + options.detailTypes.join(",");
+      detail_path = "/details/" + options.detailTypes.join(",");
       options.params.vv = 2;
     }
-    request(this._base_uri + "/locations/" + encodeURIComponent(id) + details, options, type);
+
+    var queryUri = this._base_uri + "/locations/" + encodeURIComponent(id) + detail_path;
+
+    request(queryUri, options, type);
   };
 
   /**
@@ -71,7 +115,8 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.search = function(term, options) {
-    options.params = options.params || {};
+
+    options.params = getQueryParametersFromOptions(options || {});
     options.params.s = term;
 
     request(this._base_uri + "/locations", options, "search");
@@ -84,7 +129,7 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.autoComplete = function(term, options) {
-    options.params = options.params || {};
+    options.params = getQueryParametersFromOptions(options || {});
     options.params.s = term;
     options.params.a = "true";
     request(this._base_uri + "/locations", options, "autoComplete");
@@ -98,7 +143,7 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.reverseGeocode = function(lat, lon, options) {
-    options.params = options.params || {};
+    options.params = getQueryParametersFromOptions(options || {});
     options.params.lo = lon;
     options.params.la = lat;
 
@@ -118,6 +163,13 @@
     request("http://pal.sandbox.dev.bbc.co.uk/locator/default/shared/location.json", options, "cookie");
   };
 
+  /**
+   * Perform a request to a location endpoint.
+   *
+   * @param {String} path
+   * @param {Object} options
+   * @param {String} type
+   */
   var request = function(path, options, type) {
     var script, callbackName;
     callbackName = "_locservices_core_api_cb_" + new Date().getTime() + Math.round(100000 * Math.random());
@@ -145,7 +197,7 @@
     var response = {};
 
     switch (type) {
-    case "cookie":
+      case "cookie":
         response = data;
         break;
       case "location":

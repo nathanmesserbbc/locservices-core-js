@@ -47,9 +47,7 @@ asyncTest("#getLocation should call success on successful request", function() {
 asyncTest("#getLocation should call error on request", function() {
   expect(1);
   api.getLocation(2643743, {
-    params: {
-      error: "true"
-    },
+    throwError: "true",
     error: function(event) {
       ok(true, "Test correctly called error handler");
       start();
@@ -84,9 +82,7 @@ asyncTest("#getLocation with detailTypes should call error on request", function
   expect(1);
   api.getLocation(2643743, {
     detailTypes: ["tv", "radio"],
-    params: {
-      error: "true"
-    },
+    throwError: "true",
     error: function(event) {
       ok(true, "Test correctly called error handler");
       start();
@@ -107,9 +103,7 @@ asyncTest("#search should call success on successful request", function() {
 asyncTest("#search should call error on request", function() {
   expect(1);
   api.search("Cardiff", {
-    params: {
-      error: "true"
-    },
+    throwError: "true",
     error: function(event) {
       ok(true, "Test correctly called error handler");
       start();
@@ -130,9 +124,7 @@ asyncTest("#autoComplete should call success on successful request", function() 
 asyncTest("#autoComplete should call error on request", function() {
   expect(1);
   api.autoComplete("Card", {
-    params: {
-      error: "true"
-    },
+    throwError: "true",
     error: function(event) {
       ok(true, "Test correctly called error handler");
       start();
@@ -153,9 +145,7 @@ asyncTest("#reverseGeocode should call success on successful request", function(
 asyncTest("#reverseGeocode should call error on request", function() {
   expect(1);
   api.reverseGeocode(5.1, -51.2, {
-    params: {
-      error: "true"
-    },
+    throwError: "true",
     error: function(event) {
       ok(true, "Test correctly called success handler");
       start();
@@ -166,9 +156,7 @@ asyncTest("#reverseGeocode should call error on request", function() {
 asyncTest("test parameters for #getLocation method", function() {
   expect(2);
   api.getLocation(123456, {
-    params: {
-      language: "en-GB"
-    },
+    language: "en-GB",
     success: function(data) {
       notEqual(JSON.stringify(data).indexOf("123456"), -1, "Test did not pass geoname parameter through.");
       notEqual(JSON.stringify(data).indexOf("language=en-GB"), -1, "Test did not pass language parameter through.");
@@ -181,10 +169,8 @@ asyncTest("test details parameters for #getLocation method", function() {
   expect(4);
   api.getLocation(123456, {
     detailTypes: ["news", "tv", "radio"],
-    params: {
-      language: "en-GB",
-      rows: 4
-    },
+    language: "en-GB",
+    rows: 4,
     success: function(data) {
       var uri = data.location;
       notEqual(uri.indexOf("123456"), -1, "Test did not pass geoname parameter through.");
@@ -199,10 +185,8 @@ asyncTest("test details parameters for #getLocation method", function() {
 asyncTest("test parameters for #search method", function() {
   expect(3);
   api.search("Cardiff", {
-    params: {
-      language: "en-GB",
-      rows: "15"
-    },
+    language: "en-GB",
+    rows: "15",
     success: function(data) {
       var uri = data.results;
       notEqual(uri.indexOf("s=Cardiff"), -1, "Test did not pass search parameter through.");
@@ -216,10 +200,8 @@ asyncTest("test parameters for #search method", function() {
 asyncTest("test parameters for #autoComplete method", function() {
   expect(4);
   api.autoComplete("Card", {
-    params: {
-      language: "cy-GB",
-      rows: "35"
-    },
+    language: "cy-GB",
+    rows: "35",
     success: function(data) {
       var uri = data.results;
       notEqual(uri.indexOf("s=Card"), -1, "Test did not pass search parameter through.");
@@ -234,10 +216,8 @@ asyncTest("test parameters for #autoComplete method", function() {
 asyncTest("test parameters for #reverseGeocode method", function() {
   expect(4);
   api.reverseGeocode(5.1, -51.2, {
-    params: {
-      rows: 100,
-      language: "cy-GB"
-    },
+    rows: 100,
+    language: "cy-GB",
     success: function(data) {
       var uri = data.results;
       notEqual(uri.indexOf("la=5.1"), -1, "Test did not pass lo parameter through.");
@@ -263,9 +243,7 @@ asyncTest("test location id is URI encoded", function() {
 asyncTest("test parameters are URI encoded", function() {
   expect(1);
   api.getLocation(123456, {
-    params: {
-      rows: "\\A"
-    },
+    rows: "\\A",
     success: function(data) {
       var uri = data.location.metadata.location;
       notEqual(uri.indexOf("rows=%5CA"), -1, "Test did not URI encode the location id.");

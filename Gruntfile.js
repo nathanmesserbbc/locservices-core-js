@@ -57,7 +57,7 @@ module.exports = function(grunt) {
               };
 
               res.setHeader("Content-Type", "text/javascript");
-              if (url.query.error === "true") {
+              if (url.query.throwError === "true") {
                 res.statusCode = 404;
               } else {
                 res.write(url.query.jsonp + "(" + JSON.stringify(resObject) + ")");
