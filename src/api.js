@@ -2,10 +2,13 @@
   if (typeof define === "function" && define.amd) {
     return define(factory);
   } else {
-    if (typeof locator === "undefined") {
-      global.locator = { core: {}};
+    if (typeof global.locservices === "undefined") {
+      global.locservices = {};
     }
-    locator.core.API = factory();
+    if (typeof global.locservices.core === "undefined") {
+      global.locservices.core = {};
+    }
+    global.locservices.core.API = factory();
   }
 }(this, function() {
 
@@ -132,6 +135,20 @@
     );
 
     options.params.s = term;
+
+    function makeSuccessCallback() {
+      var successCallback = options.success,
+        search = term,
+        startOffset = options.params.start;
+      return function(result) {
+        result.metadata.search = search;
+        if (startOffset) {
+          result.metadata.start = startOffset;
+        }
+        successCallback(result);
+      };
+    }
+    options.success = makeSuccessCallback();
 
     request(this._baseUri + "/locations", options, "search");
   };

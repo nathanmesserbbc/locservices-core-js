@@ -2,10 +2,13 @@
   if (typeof define === "function" && define.amd) {
     return define(factory);
   } else {
-    if (typeof locator === "undefined") {
-      global.locator = { core: {}};
+    if (typeof global.locservices === "undefined") {
+      global.locservices = {};
     }
-    locator.core.geolocation = factory();
+    if (typeof global.locservices.core === "undefined") {
+      global.locservices.core = {};
+    }
+    global.locservices.core.geolocation = factory();
   }
 }(this, function() {
 

@@ -32,7 +32,7 @@
     "asyncTest": true,
     "start": true,
     "expect": true,
-    "locator": true,
+    "locservices": true,
     "module": true,
     "throws": true
   }

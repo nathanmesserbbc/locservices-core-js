@@ -7,7 +7,7 @@ var API = function() {
 module("Preferred Location", {
   setup: function() {
     api = new API();
-    preferredLocation = new locator.core.PreferredLocation(api);
+    preferredLocation = new locservices.core.PreferredLocation(api);
   }, teardown: function() {
     preferredLocation.unset();
   }
