@@ -2,7 +2,7 @@ var api;
 
 module("API", {
   setup: function() {
-    api = new locator.core.API();
+    api = new locservices.core.API();
     api._baseUri = "http://localhost:9999/test/fixtures";
   },
   teardown: function() {
@@ -10,18 +10,18 @@ module("API", {
 });
 
 test("Constructor defaults to live locator API", function() {
-  api = new locator.core.API();
+  api = new locservices.core.API();
   equal(api._baseUri, "http://open.live.bbc.co.uk/locator");
 });
 
 test("Constructor sets env", function() {
-  api = new locator.core.API({ env: "foo" });
+  api = new locservices.core.API({ env: "foo" });
   equal(api._baseUri, "http://open.foo.bbc.co.uk/locator");
 });
 
 test("Constructor sets base_uri using env", function() {
   var expectedEnv = "foo";
-  api = new locator.core.API({ env: expectedEnv });
+  api = new locservices.core.API({ env: expectedEnv });
   equal(api._baseUri, "http://open." + expectedEnv + ".bbc.co.uk/locator");
 });
 
@@ -30,7 +30,7 @@ test("Default PAL base uri is live", function() {
 });
 
 test("Override PAL base uri in constructor", function() {
-  api = new locator.core.API({ env: "test" });
+  api = new locservices.core.API({ env: "test" });
   equal(api._palBaseUri, "http://www.test.bbc.co.uk", "PAL base uri is www.test.bbc.co.uk");
 });
 
@@ -39,13 +39,13 @@ test("Constructor uses http as the default protocol to construct the base uri", 
 });
 
 test("Constructor uses options protocol to construct the base uri", function() {
-  api = new locator.core.API({ protocol: "https" });
+  api = new locservices.core.API({ protocol: "https" });
   equal(api._baseUri.substr(0, 8), "https://");
 });
 
 test("default query parameters can be built from constructor options", function() {
 
-  api = new locator.core.API({
+  api = new locservices.core.API({
     vv: 3,
     env: "test"
   });
@@ -56,7 +56,7 @@ test("default query parameters can be built from constructor options", function(
 
 test("Query parameters are built from constructor options", function() {
 
-  api = new locator.core.API({
+  api = new locservices.core.API({
     vv: 2,
     language: "en-GB",
     rows: 10,
@@ -70,7 +70,7 @@ test("Query parameters are built from constructor options", function() {
 asyncTest("#getLocation uses global query parameters", function() {
   expect(3);
 
-  api = new locator.core.API({
+  api = new locservices.core.API({
     vv: 2,
     language: "en-GB",
     rows: 10
@@ -90,7 +90,7 @@ asyncTest("#getLocation uses global query parameters", function() {
 
 asyncTest("#getLocation overrides global parameters via its options", function() {
 
-  api = new locator.core.API({ vv: 1 });
+  api = new locservices.core.API({ vv: 1 });
   api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.getLocation(123, {
@@ -151,7 +151,7 @@ asyncTest("#search overrides global parameters via its options", function() {
 
   expect(2);
 
-  api = new locator.core.API({ placetypes: ["settlement", "airport"] });
+  api = new locservices.core.API({ placetypes: ["settlement", "airport"] });
   api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.search("Cardiff", {
@@ -186,11 +186,34 @@ asyncTest("#search should call error on request", function() {
   });
 });
 
+asyncTest("#search metadata should include the search term", function() {
+  var expectedSearchTerm = "Cardiff";
+  expect(1);
+  api.search(expectedSearchTerm, {
+    success: function(result) {
+      equal(result.metadata.search, expectedSearchTerm, "Search metadata includes the search term.");
+      start();
+    }
+  });
+});
+
+asyncTest("#search metadata should include the start offset", function() {
+  var expectedStartOffset = 5;
+  expect(1);
+  api.search("Cardiff", {
+    start: expectedStartOffset,
+    success: function(result) {
+      equal(result.metadata.start, expectedStartOffset, "Search metadata includes the start offset.");
+      start();
+    }
+  });
+});
+
 asyncTest("#autoComplete overrides global parameters via its options", function() {
 
   expect(1);
 
-  api = new locator.core.API({ language: "en-GB" });
+  api = new locservices.core.API({ language: "en-GB" });
   api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.autoComplete("Card", {
@@ -228,7 +251,7 @@ asyncTest("#reverseGeocode overrides global parameters via its options", functio
 
   expect(1);
 
-  api = new locator.core.API({ language: "en-GB" });
+  api = new locservices.core.API({ language: "en-GB" });
   api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.reverseGeocode(0, 0, {

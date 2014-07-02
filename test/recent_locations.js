@@ -2,7 +2,7 @@ var recentLocations;
 
 module("RecentLocations", {
   setup: function() {
-    recentLocations = new locator.core.RecentLocations();
+    recentLocations = new locservices.core.RecentLocations();
   },
   teardown: function() {
     recentLocations.clear();
