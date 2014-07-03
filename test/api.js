@@ -151,15 +151,15 @@ asyncTest("#search overrides global parameters via its options", function() {
 
   expect(2);
 
-  api = new locservices.core.API({ placetypes: ["settlement", "airport"] });
+  api = new locservices.core.API({ "place-types": ["settlement", "airport"] });
   api._baseUri = "http://localhost:9999/test/fixtures";
 
   api.search("Cardiff", {
-    placetypes: ["road"],
+    "place-types": ["road"],
     success: function(data) {
       var uri = data.results;
-      ok(uri.indexOf("placetypes=road") > -1, "placetypes=road override");
-      ok(uri.indexOf("settlement,airport") === -1, "original placeytpes non existent in uri");
+      ok(uri.indexOf("place-types=road") > -1, "place-types=road override");
+      ok(uri.indexOf("settlement,airport") === -1, "original place types non existent in uri");
       start();
     }
   });
