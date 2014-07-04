@@ -13,6 +13,96 @@ module("Preferred Location", {
   }
 });
 
+// isValidLocation()
+
+test("isValidLocation() returns false if placeType is invalid", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "foo",
+    country: "GB"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(false, actualValue);
+});
+
+test("isValidLocation() returns false if country is invalid", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "settlement",
+    country: "foo"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(false, actualValue);
+});
+
+test("isValidLocation() returns true if placeType is 'settlement'", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "settlement",
+    country: "GB"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(true, actualValue);
+});
+
+test("isValidLocation() returns true if placeType is 'airport'", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "airport",
+    country: "GB"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(true, actualValue);
+});
+
+test("isValidLocation() returns true if country is 'GB'", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "settlement",
+    country: "GB"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(true, actualValue);
+});
+
+test("isValidLocation() returns true if country is 'GG'", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "settlement",
+    country: "GG"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(true, actualValue);
+});
+
+test("isValidLocation() returns true if country is 'IM'", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "settlement",
+    country: "IM"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(true, actualValue);
+});
+
+test("isValidLocation() returns true if country is 'JE'", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "settlement",
+    country: "JE"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(true, actualValue);
+});
+
 // unset()
 
 test("unset() returns false if domain is invalid", function() {
