@@ -22,6 +22,25 @@
   }
 
   /**
+   * Checks if a location is a valid preferred location
+   *
+   * @param {Object} location
+   * @return {Boolean}
+   */
+  PreferredLocation.prototype.isValidLocation = function(location) {
+    var placeType, country;
+    placeType = location.placeType; 
+    country = location.country;
+    if (placeType !== "settlement" && placeType !== "airport") {
+      return false;
+    }
+    if (country !== "GB" && country !== "GG" && country !== "IM" && country !== "JE") {
+      return false;
+    }
+    return true;
+  };
+
+  /**
    * Checks if the locserv cookie has been set
    *
    * @return {Boolean}
