@@ -18,31 +18,77 @@ test("Adding an invalid location throws and Error", 1, function() {
   throws(callback, Error, "An error is thrown");
 });
 
-test("Ensures that location id\'s are stored as strings", function() {
+test("Adding a location with a numeric id throws an Error", 1, function() {
 
-  recentLocations.add({ id: 1, name: "Cardiff", placeType: "postcode" });
+  var callback = function() {
+    recentLocations.add({
+      id: 1234,
+      name: "Foo",
+      container: "Bar",
+      placeType: "settlement",
+      country: "GB"
+    });
+  };
 
-  equal(typeof recentLocations.all()[0].id, "string", "Location id's are stored as strings");
+  throws(callback, Error, "An error is thrown");
+});
+
+test("Adding a non postcode or district without a container throws an Error", 1, function() {
+
+  var callback = function() {
+    recentLocations.add({
+      id: "1234",
+      name: "Foo",
+      placeType: "settlement",
+      country: "GB"
+    });
+  };
+
+  throws(callback, Error, "An error is thrown");
+});
+
+test("Adding a district without a container returns true", 1, function() {
+
+  var result = recentLocations.add({
+    id: "CF5",
+    name: "CF5",
+    placeType: "district",
+    country: "GB"
+  });
+
+  equal(result, true);
+});
+
+test("Adding a postcode without a container returns true", 1, function() {
+
+  var result = recentLocations.add({
+    id: "CF5 1AB",
+    name: "CF5 1AB",
+    placeType: "postcode",
+    country: "GB"
+  });
+
+  equal(result, true);
 });
 
 test("Adding locations pushes pushes them to the top of the stack", function() {
 
-  recentLocations.add({ id: 1, name: "Cardiff", placeType: "postcode" });
-  recentLocations.add({ id: 2, name: "Pontypridd", placeType: "postcode" });
+  recentLocations.add({ id: "1", name: "Cardiff", placeType: "postcode" });
+  recentLocations.add({ id: "2", name: "Pontypridd", placeType: "postcode" });
 
-  equal(recentLocations.all()[0].id, 2, "Last location added is now at the top");
+  equal(recentLocations.all()[0].id, "2", "Last location added is now at the top");
 });
 
 test("That duplicate entries get added to the top of the list", function() {
 
-  var loc1 = { id: 1, name: "Cardiff", placeType: "postcode" };
-  var loc2 = { id: 2, name: "Pontypridd", placeType: "postcode" };
+  var loc1 = { id: "1", name: "Cardiff", placeType: "postcode" };
+  var loc2 = { id: "2", name: "Pontypridd", placeType: "postcode" };
 
   recentLocations.add(loc1);
   recentLocations.add(loc2);
   recentLocations.add(loc1); // duplicate
 
-  equal(recentLocations.all()[0].id, 1, "First location has moved to the top");
+  equal(recentLocations.all()[0].id, "1", "First location has moved to the top");
 });
 
 test("all() returns an Array by default", function() {
@@ -59,21 +105,21 @@ test("all() returns an empty Array by default", function() {
 
 test("removing a location", function() {
 
-  var loc1 = { id: 1, name: "Cardiff", placeType: "postcode" };
-  var loc2 = { id: 2, name: "Pontypridd", placeType: "postcode" };
+  var loc1 = { id: "1", name: "Cardiff", placeType: "postcode" };
+  var loc2 = { id: "2", name: "Pontypridd", placeType: "postcode" };
 
   recentLocations.add(loc1);
   recentLocations.add(loc2);
 
-  recentLocations.remove(1);
+  recentLocations.remove("1");
 
   equal(recentLocations.all().length, 1, "Only one location exists in history");
 });
 
 test("clearing all locations from memory", function() {
 
-  var loc1 = { id: 1, name: "Cardiff", placeType: "postcode" };
-  var loc2 = { id: 2, name: "Pontypridd", placeType: "postcode" };
+  var loc1 = { id: "1", name: "Cardiff", placeType: "postcode" };
+  var loc2 = { id: "2", name: "Pontypridd", placeType: "postcode" };
 
   recentLocations.add(loc1);
   recentLocations.add(loc2);
@@ -94,11 +140,11 @@ test("LocalStorage adapter doesn't add non-array values", function() {
 test("Adding a location performs a check for duplicate entries", function() {
 
   var stub = sinon.stub(recentLocations, "contains");
-  var loc = { id: 1, name: "Cardiff", placeType: "postcode" };
+  var loc = { id: "1", name: "Cardiff", placeType: "postcode" };
 
   recentLocations.add(loc);
 
-  ok(stub.calledWith(1), "Checked for duplicate entry");
+  ok(stub.calledWith("1"), "Checked for duplicate entry");
 });
 
 test("clear calls the storage adapters clear method", function() {
