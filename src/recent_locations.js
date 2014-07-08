@@ -138,6 +138,13 @@
 
     var locations = this._storageAdapter.get();
 
+    // ensure that the location id is a string 
+    // it could be a postcode ("CF5") or an id ("1234")
+    // we want the type to be consistent so that other 
+    // code can perform equality checks (===) without 
+    // hanving to cast
+    location.id = String(location.id);
+
     locations.unshift(location);
     this._storageAdapter.set(locations);
   };

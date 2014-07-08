@@ -18,6 +18,13 @@ test("Adding an invalid location throws and Error", 1, function() {
   throws(callback, Error, "An error is thrown");
 });
 
+test("Ensures that location id\'s are stored as strings", function() {
+
+  recentLocations.add({ id: 1, name: "Cardiff", placeType: "postcode" });
+
+  equal(typeof recentLocations.all()[0].id, "string", "Location id's are stored as strings");
+});
+
 test("Adding locations pushes pushes them to the top of the stack", function() {
 
   recentLocations.add({ id: 1, name: "Cardiff", placeType: "postcode" });

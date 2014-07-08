@@ -255,6 +255,21 @@ test("get() should return the expected location object", function() {
   );
 });
 
+test("get() should return a numerical location id as a string", function() {
+  var expectedLocationId;
+  var actualLocation;
+  var stub;
+
+  expectedLocationId = "6690828";
+  stub = sinon.stub(preferredLocation, "getLocServCookie");
+  stub.returns("1#l1#i=6690828:n=Pontypridd:h=w@w1#i=4172:p=Dorking@d1#1=l:2=e:3=e:4=2.41@n1#r=66");
+  
+  actualLocation = preferredLocation.get();
+  equal(typeof actualLocation.id, "string", 
+    "get() returns a numerical location id as a string"
+  );
+});
+
 // set()
 
 test("set() should set this.cookieLocation to undefined", function() {
