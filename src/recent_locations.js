@@ -127,7 +127,7 @@
   RecentLocations.prototype.add = function(location) {
 
     if (!isValidLocation(location)) {
-      throw new Error("Locations passed to RecentLocations must be a valid location");
+      return false;
     }
 
     // if a duplicate is added then it will get moved to the top of the stack
