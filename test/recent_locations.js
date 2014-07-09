@@ -9,42 +9,33 @@ module("RecentLocations", {
   }
 });
 
-test("Adding an invalid location throws and Error", 1, function() {
-
-  var callback = function() {
-    recentLocations.add({});
-  };
-
-  throws(callback, Error, "An error is thrown");
+test("Adding an invalid location returns false", 1, function() {
+  var result;
+  result = recentLocations.add({});
+  equal(result, false);
 });
 
-test("Adding a location with a numeric id throws an Error", 1, function() {
-
-  var callback = function() {
-    recentLocations.add({
-      id: 1234,
-      name: "Foo",
-      container: "Bar",
-      placeType: "settlement",
-      country: "GB"
-    });
-  };
-
-  throws(callback, Error, "An error is thrown");
+test("Adding a location with a numeric id returns false", 1, function() {
+  var result;
+  result = recentLocations.add({
+    id: 1234,
+    name: "Foo",
+    container: "Bar",
+    placeType: "settlement",
+    country: "GB"
+  });
+  equal(result, false);
 });
 
 test("Adding a non postcode or district without a container throws an Error", 1, function() {
-
-  var callback = function() {
-    recentLocations.add({
-      id: "1234",
-      name: "Foo",
-      placeType: "settlement",
-      country: "GB"
-    });
-  };
-
-  throws(callback, Error, "An error is thrown");
+  var result;
+  result = recentLocations.add({
+    id: "1234",
+    name: "Foo",
+    placeType: "settlement",
+    country: "GB"
+  });
+  equal(result, false);
 });
 
 test("Adding a district without a container returns true", 1, function() {
