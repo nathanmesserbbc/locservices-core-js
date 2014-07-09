@@ -272,9 +272,45 @@ test("get() should return a numerical location id as a string", function() {
 
 // set()
 
+test("set() should call options.error if the locationId is not a string", function() {
+  sinon.stub(api, "getCookie", function(locationId, options) {
+    options.success();
+  });
+  preferredLocation.set({}, {
+    error: function() {
+      ok(true);
+    },
+    success: function() {}
+  });
+});
+
+test("set() should call options.error if the locationId is an empty string", function() {
+  sinon.stub(api, "getCookie", function(locationId, options) {
+    options.success();
+  });
+  preferredLocation.set("", {
+    error: function() {
+      ok(true);
+    },
+    success: function() {}
+  });
+});
+
+test("set() should call options.error if the locationId has no characters", function() {
+  sinon.stub(api, "getCookie", function(locationId, options) {
+    options.success();
+  });
+  preferredLocation.set(" ", {
+    error: function() {
+      ok(true);
+    },
+    success: function() {}
+  });
+});
+
 test("set() should set this.cookieLocation to undefined", function() {
   preferredLocation.cookieLocation = "foo";
-  preferredLocation.set(1);
+  preferredLocation.set("1");
   equal(preferredLocation.cookieLocation, undefined, 
     "set() does not nullify this.cookieLocation"
   );
@@ -283,7 +319,7 @@ test("set() should set this.cookieLocation to undefined", function() {
 test("set() should pass locationId to api.getCookie", function() {
   var locationId;
   var stub;
-  locationId = 12345;
+  locationId = "12345";
   stub = sinon.stub(api, "getCookie");
   preferredLocation.set(locationId);
   equal(stub.args[0][0], locationId, 
@@ -304,7 +340,7 @@ test("set() should pass expected cookie string to setDocumentCookie()", function
     });
   };
   spy = sinon.spy(preferredLocation, "setDocumentCookie");
-  preferredLocation.set(1);
+  preferredLocation.set("1");
   actualCookieString = spy.args[0][0];
   equal(actualCookieString, expectedCookieString, "does not set the expected cookie string");
 });
@@ -326,7 +362,7 @@ test("set() should pass location object to success callback on api success", fun
     });
   };
   sinon.stub(preferredLocation, "get").returns(expectedLocation);
-  preferredLocation.set(1, options);
+  preferredLocation.set("1", options);
   equal(actualLocation, expectedLocation, "success callback does not recieve the expected location");
 });
 
@@ -343,6 +379,6 @@ test("set() should call error callback on api error", function() {
   api.getCookie = function(locationId, options) {
     options.error(expectedEvent);
   };
-  preferredLocation.set(1, options);
+  preferredLocation.set("1", options);
   equal(actualEvent, expectedEvent, "error callback does not recieve the expected event");
 });
