@@ -273,9 +273,9 @@ test("get() should return a numerical location id as a string", function() {
 // set()
 
 test("set() should call options.error if the locationId is not a string", function() {
-  api.getCookie = function(locationId, options) {
+  sinon.stub(api, "getCookie", function(locationId, options) {
     options.success();
-  };
+  });
   preferredLocation.set({}, {
     error: function() {
       ok(true);
@@ -285,9 +285,9 @@ test("set() should call options.error if the locationId is not a string", functi
 });
 
 test("set() should call options.error if the locationId is an empty string", function() {
-  api.getCookie = function(locationId, options) {
+  sinon.stub(api, "getCookie", function(locationId, options) {
     options.success();
-  };
+  });
   preferredLocation.set("", {
     error: function() {
       ok(true);
@@ -297,9 +297,9 @@ test("set() should call options.error if the locationId is an empty string", fun
 });
 
 test("set() should call options.error if the locationId has no characters", function() {
-  api.getCookie = function(locationId, options) {
+  sinon.stub(api, "getCookie", function(locationId, options) {
     options.success();
-  };
+  });
   preferredLocation.set(" ", {
     error: function() {
       ok(true);
