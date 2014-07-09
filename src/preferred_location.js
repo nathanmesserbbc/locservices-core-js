@@ -219,8 +219,8 @@
     var cookieDomain;
     options = options || {};
 
-    if ('string' !== typeof locationId || "" === locationId.replace(/^\s+|\s+$/g, "")) {
-      if ('function' === typeof options.error) {
+    if ("string" !== typeof locationId || "" === locationId.replace(/^\s+|\s+$/g, "")) {
+      if ("function" === typeof options.error) {
         options.error();
       }
       return;
