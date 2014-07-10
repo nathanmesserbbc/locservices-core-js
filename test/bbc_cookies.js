@@ -46,14 +46,14 @@ test("readPolicy() returns an object if window.bbccookies is available", functio
 test("isPersonalisationDisabled() returns false if window.bbccookies is unavailable", function() {
     window.bbccookies = undefined;
     bbcCookies = new locservices.core.BBCCookies();
-    equal(typeof bbcCookies.isPersonalisationDisabled(), false);
+    equal(bbcCookies.isPersonalisationDisabled(), false);
 });
 
 test("isPersonalisationDisabled() returns false if personalisation is enabled", function() {
-    equal(typeof bbcCookies.isPersonalisationDisabled(), false);
+    equal(bbcCookies.isPersonalisationDisabled(), false);
 });
 
 test("isPersonalisationDisabled() returns true if disabled", function() {
     policy.personalisation = false;
-    equal(typeof bbcCookies.isPersonalisationDisabled(), true);
+    equal(bbcCookies.isPersonalisationDisabled(), true);
 });

@@ -1,8 +1,16 @@
-/*global define */
-
-define(function() {
-
-  "use strict";
+(function(global, factory) {
+  if (typeof define === "function" && define.amd) {
+    return define(factory);
+  } else {
+    if (typeof global.locservices === "undefined") {
+      global.locservices = {};
+    }
+    if (typeof global.locservices.core === "undefined") {
+      global.locservices.core = {};
+    }
+    global.locservices.core.BBCCookies = factory();
+  }
+}(this, function() {
 
   function BBCCookies() {
     this._isSupported = "object" === typeof window.bbccookies;
@@ -48,4 +56,4 @@ define(function() {
 
   return BBCCookies;
 
-});
+}));
