@@ -15,6 +15,12 @@ module("Preferred Location", {
 
 // isValidLocation()
 
+test("isValidLocation() returns false if location is not an object", function() {
+  var actualValue;
+  actualValue = preferredLocation.isValidLocation(undefined);
+  equal(false, actualValue);
+});
+
 test("isValidLocation() returns false if placeType is invalid", function() {
   var location;
   var actualValue;
