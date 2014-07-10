@@ -185,6 +185,15 @@
       if ("l" === domain.name) {
         location.id = domain.data.i;
         location.name = domain.data.n;
+        if (domain.data.c) {
+          location.container = domain.data.c;
+        }
+        if (domain.data.y) {
+          location.country = domain.data.y;
+        }
+        if (domain.data.p) {
+          location.placeType = domain.data.p;
+        }
         if (domain.data.h) {
           location.nation = nationsMap[domain.data.h];
         }

@@ -255,6 +255,39 @@ test("get() should return the expected location object", function() {
   );
 });
 
+// Test the additional container, country and placeType properties added in MYLOC-96
+test("get() should return the expected location object with additional properties", function() {
+  var expectedLocation;
+  var actualLocation;
+  var stub;
+
+  expectedLocation = {
+    id        : "6690828",
+    name      : "Pontypridd",
+    container : "Rhondda Cynon Taff",
+    placeType : "settlement",
+    country   : "GB",
+    nation    : "wales",
+    news    : {
+      id   : "66",      
+      path : "england/surrey",
+      tld  : "surrey",
+      name : "Surrey"
+    },
+    weather : {
+      id   : "4172",
+      name : "Dorking"
+    }
+  };
+  stub = sinon.stub(preferredLocation, "getLocServCookie");
+  stub.returns("1#l1#i=6690828:n=Pontypridd:c=Rhondda Cynon Taff:p=settlement:y=GB:h=w@w1#i=4172:p=Dorking@d1#1=l:2=e:3=e:4=2.41@n1#r=66");
+  
+  actualLocation = preferredLocation.get();
+  deepEqual(actualLocation, expectedLocation, 
+    "get() does not return the expected location object"
+  );
+});
+
 test("get() should return a numerical location id as a string", function() {
   var expectedLocationId;
   var actualLocation;
