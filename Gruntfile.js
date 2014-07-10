@@ -6,6 +6,10 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON("package.json"),
 
     qunit: {
+      options: {
+        timeout: 500,
+        "--web-security=": false
+      },
       all: ["test/index.html"]
     },
 
@@ -34,8 +38,13 @@ module.exports = function(grunt) {
       server: {
         options: {
           port: 9999,
-          middleware: [function(req, res, next) {
-            if (req.url.indexOf("test/fixtures") !== -1) {
+          hostname: "localhost",
+          middleware: function(connect, options, middlewares) {
+
+            middlewares.push(function(req, res, next) {
+              if (req.url.indexOf("/test/fixtures") === -1) {
+                return next();
+              }
               var url = require("url").parse(req.url, true);
               var resObject = {
                 response: {
@@ -60,11 +69,12 @@ module.exports = function(grunt) {
               if (url.query.throwError === "true") {
                 res.statusCode = 404;
               } else {
-                res.write(url.query.jsonp + "(" + JSON.stringify(resObject) + ")");
+                res.write(JSON.stringify(resObject));
               }
               res.end();
-            }
-          }]
+            });
+            return middlewares;
+          }
         }
       }
     },

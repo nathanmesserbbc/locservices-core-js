@@ -220,12 +220,19 @@
         url = path + queryParams(options.params);
 
     var attachHandlers = function(xhrObject) {
-      xhrObject.onload = function() {
-        if (options.success) {
+      xhrObject.onload = function(evt) {
+        console.log(evt.target.status);
+        if (options.success && evt.target.status < 400) {
           var data = JSON.parse(xhrObject.responseText);
           options.success(formatResponse(data, type));
+        } else {
+          if (options.error) {
+            options.error();
+          }
         }
       };
+      
+      // Network level error, resource unable to be loaded
       if (options.error) {
         xhrObject.onerror = options.error;
       }
