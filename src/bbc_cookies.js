@@ -12,6 +12,9 @@
   }
 }(this, function() {
 
+  /**
+   * @constructor
+   */
   function BBCCookies() {
     this._isSupported = "object" === typeof window.bbccookies;
     if (this._isSupported) {
