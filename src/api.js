@@ -206,6 +206,43 @@
     request(this._palBaseUri + "/locator/default/shared/location.json", options, "cookie");
   };
 
+  var request = function(path, options, type) {
+    options.params.format = "json";
+
+    var xhr = new XMLHttpRequest(),
+        url = path + queryParams(options.params);
+
+
+    var attachHandlers = function(xhrObject) {
+      xhrObject.onload = function() {
+        if (options.success) {
+          var data = JSON.parse(xhrObject.responseText);
+          options.success(formatResponse(data, type));
+        }
+      };
+      if (options.error) {
+        xhrObject.onerror = options.error
+      };
+    };
+
+    if ("withCredentials" in xhr) {
+      xhr.open("GET", url, true);
+      attachHandlers(xhr);
+
+      xhr.send();
+
+    } else if (typeof XDomainRequest != "undefined") {
+      xhr = new XDomainRequest();
+      xhr.open("GET", url);
+      attachHandlers(xhr);
+
+      xhr.send();
+
+    } else {
+      requestWithJSONP(path, options, type);
+    }
+  };
+
   /**
    * Perform a request to a location endpoint.
    *
@@ -213,7 +250,7 @@
    * @param {Object} options
    * @param {String} type
    */
-  var request = function(path, options, type) {
+  var requestWithJSONP = function(path, options, type) {
     var script, callbackName;
     callbackName = "_locservices_core_api_cb_" + new Date().getTime() + Math.round(100000 * Math.random());
 
