@@ -74,12 +74,15 @@ module.exports = function(grunt) {
         options: {
           sourceMap: true
         },
-        files: {
-          "dist/api.min.js": "src/api.js",
-          "dist/preferred_location.min.js": "src/preferred_location.js",
-          "dist/geolocation.min.js": "src/geolocation.js",
-          "dist/recent_locations.min.js": "src/recent_locations.js"
-        }
+        files: [
+          {
+            expand: true,
+            cwd: "src",
+            src: ["**/*.js"],
+            dest: "dist/",
+            ext: ".min.js"
+          }
+        ]
       }
     }
 
