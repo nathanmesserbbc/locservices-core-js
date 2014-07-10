@@ -11,16 +11,34 @@ define(function() {
     }
   }
 
+  /**
+   * Is window.bbccookies available
+   *
+   * @return {Boolean}
+   */
   BBCCookies.prototype.isSupported = function() {
     return this._isSupported;
   };
 
+  /**
+   * Wrapper for the bbccookies.readPolicy method
+   *
+   * @return {Object|Boolean}
+   */
   BBCCookies.prototype.readPolicy = function() {
     if (this._isSupported) {
       return this._policy;
     }
+    return false;
   };
 
+  /**
+   * Has personalisation via cookies been disabled.
+   * This will only return true if window.bbccookies is available
+   * and bbccookies.readPolicy().personalisation is false
+   *
+   * @return {Boolean}
+   */
   BBCCookies.prototype.isPersonalisationDisabled = function() {
     if (this._isSupported) {
       return false === this._policy.personalisation;
