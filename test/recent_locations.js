@@ -70,6 +70,22 @@ test("Adding locations pushes pushes them to the top of the stack", function() {
   equal(recentLocations.all()[0].id, "2", "Last location added is now at the top");
 });
 
+test("Location history is limited to 4 locations", function() {
+
+  recentLocations.add({ id: "1", name: "CF1", placeType: "district" });
+  recentLocations.add({ id: "2", name: "CF2", placeType: "district" });
+  recentLocations.add({ id: "3", name: "CF3", placeType: "district" });
+  recentLocations.add({ id: "4", name: "CF4", placeType: "district" });
+  recentLocations.add({ id: "5", name: "CF5", placeType: "district" });
+  recentLocations.add({ id: "6", name: "CF6", placeType: "district" });
+
+  equal(recentLocations.all().length, "4", "Location history is limited to 4 locations");
+  equal(recentLocations.all()[0].id, "6", "First location is as expected");
+  equal(recentLocations.all()[1].id, "5", "Second location is as expected");
+  equal(recentLocations.all()[2].id, "4", "Third location is as expected");
+  equal(recentLocations.all()[3].id, "3", "Fourth location is as expected");
+});
+
 test("That duplicate entries get added to the top of the list", function() {
 
   var loc1 = { id: "1", name: "Cardiff", placeType: "postcode" };
