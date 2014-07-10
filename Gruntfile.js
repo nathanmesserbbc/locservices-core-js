@@ -87,13 +87,6 @@ module.exports = function(grunt) {
 
   require("load-grunt-tasks")(grunt);
 
-  grunt.loadNpmTasks("grunt-contrib-connect");
-  grunt.loadNpmTasks("grunt-contrib-qunit");
-  grunt.loadNpmTasks("grunt-contrib-jshint");
-  grunt.loadNpmTasks("grunt-jscs-checker");
-  grunt.loadNpmTasks("grunt-contrib-watch");
-  grunt.loadNpmTasks("grunt-contrib-uglify");
-
   grunt.registerTask("build", ["jshint", "jscs", "test", "uglify"]);
   grunt.registerTask("test", ["connect", "qunit"]);
   grunt.registerTask("travis", ["jshint", "jscs", "test"]);
