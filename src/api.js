@@ -221,7 +221,6 @@
 
     var attachHandlers = function(xhrObject) {
       xhrObject.onload = function(evt) {
-        console.log(evt.target.status);
         if (options.success && evt.target.status < 400) {
           var data = JSON.parse(xhrObject.responseText);
           options.success(formatResponse(data, type));
@@ -231,7 +230,7 @@
           }
         }
       };
-      
+
       // Network level error, resource unable to be loaded
       if (options.error) {
         xhrObject.onerror = options.error;

@@ -6,11 +6,12 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON("package.json"),
 
     qunit: {
-      options: {
-        timeout: 500,
-        "--web-security=": false
-      },
-      all: ["test/index.html"]
+      all: {
+        options: {
+          "--web-security": false,
+          urls: ["http://localhost:9999/test/index.html"]
+        }
+      }
     },
 
     jshint: {
