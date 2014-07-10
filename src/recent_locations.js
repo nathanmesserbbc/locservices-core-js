@@ -140,6 +140,11 @@
     var locations = this._storageAdapter.get();
 
     locations.unshift(location);
+    if (4 < locations.length) {
+      // could probably pop() here (as length should never be > 5)
+      // but will slice to be safe
+      locations = locations.slice(0, 4);
+    }
     this._storageAdapter.set(locations);
 
     return true;
