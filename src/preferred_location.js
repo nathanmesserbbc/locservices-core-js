@@ -29,6 +29,9 @@
    */
   PreferredLocation.prototype.isValidLocation = function(location) {
     var placeType, country;
+    if ("object" !== typeof location) {
+      return false;
+    }
     placeType = location.placeType; 
     country = location.country;
     if (placeType !== "settlement" && placeType !== "airport") {
