@@ -206,12 +206,18 @@
     request(this._palBaseUri + "/locator/default/shared/location.json", options, "cookie");
   };
 
+  /**
+   * Perform an XHR request (if supported) to a location endpoint, fallback to JSONP.
+   *
+   * @param {String} path
+   * @param {Object} options
+   * @param {String} type
+   */
   var request = function(path, options, type) {
     options.params.format = "json";
 
     var xhr = new XMLHttpRequest(),
         url = path + queryParams(options.params);
-
 
     var attachHandlers = function(xhrObject) {
       xhrObject.onload = function() {
@@ -221,8 +227,8 @@
         }
       };
       if (options.error) {
-        xhrObject.onerror = options.error
-      };
+        xhrObject.onerror = options.error;
+      }
     };
 
     if ("withCredentials" in xhr) {
@@ -231,7 +237,7 @@
 
       xhr.send();
 
-    } else if (typeof XDomainRequest != "undefined") {
+    } else if (typeof XDomainRequest !== "undefined") {
       xhr = new XDomainRequest();
       xhr.open("GET", url);
       attachHandlers(xhr);
@@ -244,7 +250,7 @@
   };
 
   /**
-   * Perform a request to a location endpoint.
+   * Perform a request via JSONP to a location endpoint.
    *
    * @param {String} path
    * @param {Object} options
