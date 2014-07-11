@@ -58,7 +58,7 @@
     var defaultParams = createQueryParametersFromObject(this._options);
     for (k in defaultParams) {
       if (defaultParams.hasOwnProperty(k) && k !== "env" && k !== "protocol") {
-        this._defaultParams[k] = this._options[k];
+        this._defaultParams[k] = defaultParams[k];
       }
     }
 
@@ -93,6 +93,14 @@
 
     return params;
   }
+
+  /**
+   * Returns an array of query parameters used for querying the API
+   *
+   */
+  API.prototype.getDefaultQueryParameters = function() {
+    return this._defaultParams;
+  };
 
   /**
    * Returns a single location object via it's GeonameID or Postcode.
