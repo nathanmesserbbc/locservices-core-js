@@ -95,7 +95,7 @@
   }
 
   /**
-   * Returns an array of query parameters used with the API
+   * Returns an array of query parameters used for querying the API
    *
    */
   API.prototype.getDefaultQueryParameters = function() {
