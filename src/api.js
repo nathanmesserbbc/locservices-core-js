@@ -58,7 +58,7 @@
     var defaultParams = createQueryParametersFromObject(this._options);
     for (k in defaultParams) {
       if (defaultParams.hasOwnProperty(k) && k !== "env" && k !== "protocol") {
-        this._defaultParams[k] = this._options[k];
+        this._defaultParams[k] = defaultParams[k];
       }
     }
 

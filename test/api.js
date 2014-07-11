@@ -54,6 +54,16 @@ test("default query parameters can be built from constructor options", function(
   equal(api._defaultParams.vv, 3, "vv=3 default parameter applied");
 });
 
+test("default parameters contain normalize arrays to string", function() {
+  api = new locservices.core.API({
+    env: "test",
+    "place-types": ["airport", "road"]
+  });
+
+  equal(Object.keys(api._defaultParams).length, 1, "One parameter applied by default");
+  equal(api._defaultParams["place-types"], "airport,road", "vv=3 default parameter applied");
+});
+
 test("Query parameters are built from constructor options", function() {
 
   api = new locservices.core.API({
