@@ -221,10 +221,16 @@
 
     var attachHandlers = function(xhrObject) {
       xhrObject.onload = function(evt) {
-        // TODO: Check the status code handling as we need to test 304 responses, as well as some 100 / 200 ones.
         if (options.success && evt.target.status < 400) {
-          var data = JSON.parse(xhrObject.responseText);
-          options.success(formatResponse(data, type));
+          var data;
+          try {
+            data = JSON.parse(xhrObject.responseText);
+            options.success(formatResponse(data, type));
+          } catch (e) {
+            if (options.error) {
+              options.error();
+            }
+          }
         } else {
           if (options.error) {
             options.error();

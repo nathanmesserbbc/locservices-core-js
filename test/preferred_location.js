@@ -8,7 +8,8 @@ module("Preferred Location", {
   setup: function() {
     api = new API();
     preferredLocation = new locservices.core.PreferredLocation(api);
-  }, teardown: function() {
+  },
+  teardown: function() {
     preferredLocation.unset();
   }
 });
@@ -132,10 +133,10 @@ test("unset() should pass an expired string to setDocumentCookie()", function() 
   stubSetDocumentCookie = sinon.stub(preferredLocation, "setDocumentCookie");
   preferredLocation.unset();
   equal(
-    stubSetDocumentCookie.args[0][0], 
-    "locserv=; expires=Thu, 01 Jan 1970 00:00:01 GMT; Path=/; domain=.bbc.co.uk;", 
+    stubSetDocumentCookie.args[0][0],
+    "locserv=; expires=Thu, 01 Jan 1970 00:00:01 GMT; Path=/; domain=.bbc.co.uk;",
     "Cookie was not unset"
-  ); 
+  );
 });
 
 // getHostname()
@@ -158,7 +159,7 @@ test("getLocServCookie() should return null if cookie does not exist", function(
   stub = sinon.stub(preferredLocation, "getDocumentCookie");
   stub.returns("foo=123");
   actualValue = preferredLocation.getLocServCookie();
-  equal(actualValue, null, 
+  equal(actualValue, null,
     "getLocServCookie() does not return null when locserv cookie is not set"
   );
 });
@@ -221,7 +222,7 @@ test("get() should return null if cookie does not exist", function() {
   stub = sinon.stub(preferredLocation, "getLocServCookie");
   stub.returns(null);
   actualValue = preferredLocation.get();
-  equal(actualValue, null, 
+  equal(actualValue, null,
     "get() does not return null when cookie is not set"
   );
 });
@@ -236,7 +237,7 @@ test("get() should return the expected location object", function() {
     name    : "Pontypridd",
     nation  : "wales",
     news    : {
-      id   : "66",      
+      id   : "66",
       path : "england/surrey",
       tld  : "surrey",
       name : "Surrey"
@@ -248,9 +249,9 @@ test("get() should return the expected location object", function() {
   };
   stub = sinon.stub(preferredLocation, "getLocServCookie");
   stub.returns("1#l1#i=6690828:n=Pontypridd:h=w@w1#i=4172:p=Dorking@d1#1=l:2=e:3=e:4=2.41@n1#r=66");
-  
+
   actualLocation = preferredLocation.get();
-  deepEqual(actualLocation, expectedLocation, 
+  deepEqual(actualLocation, expectedLocation,
     "get() does not return the expected location object"
   );
 });
@@ -263,9 +264,9 @@ test("get() should return a numerical location id as a string", function() {
   expectedLocationId = "6690828";
   stub = sinon.stub(preferredLocation, "getLocServCookie");
   stub.returns("1#l1#i=6690828:n=Pontypridd:h=w@w1#i=4172:p=Dorking@d1#1=l:2=e:3=e:4=2.41@n1#r=66");
-  
+
   actualLocation = preferredLocation.get();
-  equal(typeof actualLocation.id, "string", 
+  equal(typeof actualLocation.id, "string",
     "get() returns a numerical location id as a string"
   );
 });
@@ -311,7 +312,7 @@ test("set() should call options.error if the locationId has no characters", func
 test("set() should set this.cookieLocation to undefined", function() {
   preferredLocation.cookieLocation = "foo";
   preferredLocation.set("1");
-  equal(preferredLocation.cookieLocation, undefined, 
+  equal(preferredLocation.cookieLocation, undefined,
     "set() does not nullify this.cookieLocation"
   );
 });
@@ -322,7 +323,7 @@ test("set() should pass locationId to api.getCookie", function() {
   locationId = "12345";
   stub = sinon.stub(api, "getCookie");
   preferredLocation.set(locationId);
-  equal(stub.args[0][0], locationId, 
+  equal(stub.args[0][0], locationId,
     "set() does not pass locationId to api.getCookie"
   );
 });

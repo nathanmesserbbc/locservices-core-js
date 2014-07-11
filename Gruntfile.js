@@ -67,8 +67,12 @@ module.exports = function(grunt) {
               };
 
               res.setHeader("Content-Type", "text/javascript");
-              if (url.query.throwError === "true") {
-                res.statusCode = 404;
+              var error = url.query.throwError;
+              if (typeof error !== "undefined") {
+                res.statusCode = (typeof error === "number") ? error : 404;
+                if (error === 204) {
+                  res.write("");
+                }
               } else {
                 res.write(JSON.stringify(resObject));
               }

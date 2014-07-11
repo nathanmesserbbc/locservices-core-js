@@ -383,3 +383,36 @@ asyncTest("test parameters are URI encoded", function() {
     }
   });
 });
+
+asyncTest("test error handler should be called on 404 from api", function() {
+  expect(1);
+  api.getLocation(123456, {
+    throwError: 404,
+    error: function(data) {
+      ok(true, "Test did not run error handler on 404 error.");
+      start();
+    }
+  });
+});
+
+asyncTest("test error handler should be called on 500 from api", function() {
+  expect(1);
+  api.getLocation(123456, {
+    throwError: 500,
+    error: function(data) {
+      ok(true, "Test did not run error handler on 500 error.");
+      start();
+    }
+  });
+});
+
+asyncTest("test error handler should be called on 204 if no content is returned from api", function() {
+  expect(1);
+  api.getLocation(123456, {
+    throwError: 204,
+    error: function(data) {
+      ok(true, "Test did not run error handler on 204 error.");
+      start();
+    }
+  });
+});
