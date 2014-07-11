@@ -50,7 +50,8 @@
    */
   var applyFilter = function(locations, options) {
 
-    if ("domestic,international".indexOf(options.filter) === -1) {
+    if (!("domestic" === options.filter ||
+          "international" === options.filter)) {
       options.filter = undefined;
       return filter(locations, options);
     }
