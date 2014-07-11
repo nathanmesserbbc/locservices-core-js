@@ -61,7 +61,7 @@ test("default parameters contain normalize arrays to string", function() {
   });
 
   equal(Object.keys(api._defaultParams).length, 1, "One parameter applied by default");
-  equal(api._defaultParams["place-types"], "airport,road", "vv=3 default parameter applied");
+  equal(api._defaultParams["place-types"], "airport,road", "place-types are normalized on construction");
 });
 
 test("Query parameters are built from constructor options", function() {
@@ -75,6 +75,18 @@ test("Query parameters are built from constructor options", function() {
   });
 
   equal(Object.keys(api._defaultParams).length, 3, "Three query parameters found from options");
+});
+
+test("Returns default query parameters", function() {
+  api = new locservices.core.API({
+    env: "test",
+    filter: "domestic",
+    "place-types": ["airport", "road"]
+  });
+
+  equal(Object.keys(api.getDefaultQueryParameters()).length, 2, "Two parameter applied by default");
+  equal(api.getDefaultQueryParameters()["filter"], "domestic", "place-types parameters returned");
+  equal(api.getDefaultQueryParameters()["place-types"], "airport,road", "filter parameter returned");
 });
 
 asyncTest("#getLocation uses global query parameters", function() {

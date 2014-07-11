@@ -95,6 +95,14 @@
   }
 
   /**
+   * Returns an array of query parameters used with the API
+   *
+   */
+  API.prototype.getDefaultQueryParameters = function() {
+    return this._defaultParams;
+  };
+
+  /**
    * Returns a single location object via it's GeonameID or Postcode.
    *
    * @param {String|Number} id - A Geoname ID or valid postcode.
