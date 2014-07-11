@@ -8,7 +8,7 @@
     if (typeof global.locservices.core === "undefined") {
       global.locservices.core = {};
     }
-    global.locservices.core.Filter = factory();
+    global.locservices.core.filter = factory();
   }
 }(this, function() {
 
@@ -88,20 +88,6 @@
     return filtered;
   };
 
-  /**
-   * @constructor
-   */
-  function Filter() {}
-
-  /**
-   * Filters an array of locations by options
-   *
-   * @param {Array} locations
-   * @param {Object} options
-   * @return {Array}
-   */
-  Filter.prototype.filter = filter;
-
-  return Filter;
+  return filter;
 
 }));

@@ -9,12 +9,12 @@ module("Filter", {
       { name: "Caracas", placeType: "settlement", country: "VE" },
       { name: "JFK Airport", placeType: "airport", country: "US" }
     ];
-    filter = new locservices.core.Filter();
+    filter = locservices.core.filter;
   }
 });
 
 test("should filter locations by placeType", function() {
-  var actual = filter.filter(locations, { placeType: "settlement" });
+  var actual = filter(locations, { placeType: "settlement" });
 
   equal(actual.length, 3);
   equal(actual[0].name, "Cardiff");
@@ -23,7 +23,7 @@ test("should filter locations by placeType", function() {
 });
 
 test("should filter locations by multiple placeTypes", function() {
-  var actual = filter.filter(locations, { placeType: "settlement,airport" });
+  var actual = filter(locations, { placeType: "settlement,airport" });
 
   equal(actual.length, 5);
   equal(actual[0].name, "Cardiff");
@@ -34,21 +34,21 @@ test("should filter locations by multiple placeTypes", function() {
 });
 
 test("should filter locations by country", function() {
-  var actual = filter.filter(locations, { country: "VE" });
+  var actual = filter(locations, { country: "VE" });
 
   equal(actual.length, 1);
   equal(actual[0].name, "Caracas");
 });
 
 test("should filter locations by placeType and country", function() {
-  var actual = filter.filter(locations, { placeType: "settlement", country: "GB" });
+  var actual = filter(locations, { placeType: "settlement", country: "GB" });
 
   equal(actual.length, 1);
   equal(actual[0].name, "Cardiff");
 });
 
 test("should filter locations by domestic filter", function() {
-  var actual = filter.filter(locations, { filter: "domestic" });
+  var actual = filter(locations, { filter: "domestic" });
 
   equal(actual.length, 3);
   equal(actual[0].name, "Cardiff");
@@ -57,7 +57,7 @@ test("should filter locations by domestic filter", function() {
 });
 
 test("should filter locations by domestic filter, placeType", function() {
-  var actual = filter.filter(locations, { filter: "domestic", placeType: "settlement" });
+  var actual = filter(locations, { filter: "domestic", placeType: "settlement" });
 
   equal(actual.length, 2);
   equal(actual[0].name, "Cardiff");
@@ -65,21 +65,21 @@ test("should filter locations by domestic filter, placeType", function() {
 });
 
 test("should filter locations by domestic filter, countries", function() {
-  var actual = filter.filter(locations, { filter: "domestic", country: "IM" });
+  var actual = filter(locations, { filter: "domestic", country: "IM" });
 
   equal(actual.length, 1);
   equal(actual[0].name, "Crosby");
 });
 
 test("should filter locations by domestic filter, placeType and countries", function() {
-  var actual = filter.filter(locations, { filter: "domestic", placeType: "airport", country: "GB" });
+  var actual = filter(locations, { filter: "domestic", placeType: "airport", country: "GB" });
 
   equal(actual.length, 1);
   equal(actual[0].name, "Swansea Airport");
 });
 
 test("should filter locations by international filter", function() {
-  var actual = filter.filter(locations, { filter: "international" });
+  var actual = filter(locations, { filter: "international" });
 
   equal(actual.length, 5);
   equal(actual[0].name, "Cardiff");
@@ -90,7 +90,7 @@ test("should filter locations by international filter", function() {
 });
 
 test("should filter locations by international filter, placeType", function() {
-  var actual = filter.filter(locations, { filter: "international", placeType: "airport" });
+  var actual = filter(locations, { filter: "international", placeType: "airport" });
 
   equal(actual.length, 2);
   equal(actual[0].name, "Swansea Airport");
@@ -98,14 +98,14 @@ test("should filter locations by international filter, placeType", function() {
 });
 
 test("should filter locations by international filter, countries", function() {
-  var actual = filter.filter(locations, { filter: "international", country: "US", placeType: "airport" });
+  var actual = filter(locations, { filter: "international", country: "US", placeType: "airport" });
 
   equal(actual.length, 1);
   equal(actual[0].name, "JFK Airport");
 });
 
 test("should filter locations by international filter, placeType and countries", function() {
-  var actual = filter.filter(locations, { filter: "international", placeType: "settlement", country: "VE" });
+  var actual = filter(locations, { filter: "international", placeType: "settlement", country: "VE" });
 
   equal(actual.length, 1);
   equal(actual[0].name, "Caracas");
