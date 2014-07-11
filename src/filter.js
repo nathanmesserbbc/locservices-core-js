@@ -75,9 +75,11 @@
    * @param {String} filterValue
    * @return {Array}
    */
-  var applyProperty = function(locations, property, filterValue) {
+  var applyProperty = function(locations, property, value) {
 
-    if ("undefined" === typeof filterValue) {
+    var filterValue = (value || "").replace(/^\s+|\s+$/g, "");
+
+    if ("" === filterValue) {
       return locations;
     }
     var filtered = [];

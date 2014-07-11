@@ -47,6 +47,17 @@ test("should filter locations by placeType and country", function() {
   equal(actual[0].name, "Cardiff");
 });
 
+test("should ignore empty filters", function() {
+  var actual = filter(locations, { placeType: "", country: " " });
+
+  equal(actual.length, 5);
+  equal(actual[0].name, "Cardiff");
+  equal(actual[1].name, "Swansea Airport");
+  equal(actual[2].name, "Crosby");
+  equal(actual[3].name, "Caracas");
+  equal(actual[4].name, "JFK Airport");
+});
+
 test("should ignore invalid filters", function() {
   var actual = filter(locations, { filter: "global", placeType: "settlement" });
 
