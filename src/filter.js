@@ -49,6 +49,11 @@
    * @return {Array}
    */
   var applyFilter = function(locations, options) {
+
+    if ("domestic,international".indexOf(options.filter) === -1) {
+      options.filter = undefined;
+      return filter(locations, options);
+    }
     var filters = options.filter === "domestic" ? domestic : international;
 
     if ("undefined" !== typeof options.placeType) {
