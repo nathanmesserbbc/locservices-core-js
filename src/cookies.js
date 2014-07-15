@@ -103,7 +103,7 @@
    * @param  {String} key
    * @param  {String} path
    * @param  {String} domain
-   * @param  {Boolean|String} 
+   * @return  {Boolean|String} 
    */
   Cookies.prototype.unset = function(key, path, domain) {
     var cookieString;

@@ -36,7 +36,7 @@ test("hasItem() returns false if key does not exits", function() {
   equal(result, false);
 });
 
-test("hasItem() returns false if key does not exits", function() {
+test("hasItem() returns true if key exits", function() {
   var key = "key_only_used_in_this_has_item_true_test";
   document.cookie = key + "=foo_bar";
   var result = cookies.hasItem(key);
@@ -57,6 +57,26 @@ test("get() returns expected value if key exists", function() {
 
 test("set() returns false if no key is provided", function() {
   equal(cookies.set(undefined, "bar"), false);
+});
+
+test("set() returns false if key is \"expires\"", function() {
+  equal(cookies.set("expires", "bar"), false);
+});
+
+test("set() returns false if key is \"max-age\"", function() {
+  equal(cookies.set("max-age", "bar"), false);
+});
+
+test("set() returns false if key is \"path\"", function() {
+  equal(cookies.set("path", "bar"), false);
+});
+
+test("set() returns false if key is \"domain\"", function() {
+  equal(cookies.set("domain", "bar"), false);
+});
+
+test("set() returns false if key is \"secure\"", function() {
+  equal(cookies.set("secure", "bar"), false);
 });
 
 test("set() returns a string if cookie is set", function() {
