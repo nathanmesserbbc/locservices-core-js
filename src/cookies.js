@@ -20,6 +20,23 @@
   }
 
   /**
+   * Does the client allow cookies to be set
+   *
+   * @return {Boolean}
+   */
+  Cookies.prototype.isSupported = function() {
+    var key = "locservices_ui_test_cookie";
+    var value = "test";
+    var isSet = false;
+    this.set(key, value);
+    if (this.get(key) === value) {
+      isSet = true;
+    }
+    this.unset(key);
+    return isSet;
+  };
+
+  /**
    * Does a value exist
    *
    * @param  {String} key the name of the cookie value

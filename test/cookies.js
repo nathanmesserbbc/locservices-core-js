@@ -19,6 +19,18 @@ module("Cookies", {
 
 });
 
+test("isSupported() returns false unable to set and get", function() {
+  sinon.stub(cookies, "set");
+  sinon.stub(cookies, "get");
+  equal(cookies.isSupported(), false);
+});
+
+test("isSupported() returns false able to set and get", function() {
+  sinon.stub(cookies, "set");
+  sinon.stub(cookies, "get").returns("test");
+  equal(cookies.isSupported(), true);
+});
+
 test("hasItem() returns false if key does not exits", function() {
   var result = cookies.hasItem("key_only_used_in_this_has_item_false_test");
   equal(result, false);
