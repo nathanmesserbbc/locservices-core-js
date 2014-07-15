@@ -34,37 +34,43 @@ module.exports = function(grunt) {
       server: {
         options: {
           port: 9999,
-          middleware: [function(req, res, next) {
-            if (req.url.indexOf("test/fixtures") !== -1) {
-              var url = require("url").parse(req.url, true);
-              var resObject = {
-                response: {
-                  totalResults: 0,
-                  metadata: {
-                    location: req.url
-                  },
-                  content: {
-                    details: {
-                      details: []
-                    }
-                  },
-                  locations: req.url,
-                  results: {
+          hostname: "localhost",
+          middleware: function(connect, options, middlewares) {
+            middlewares.push(function(req, res, next) {
+              if (req.url.indexOf("test/fixtures") !== -1) {
+                var url = require("url").parse(req.url, true);
+                var resObject = {
+                  response: {
                     totalResults: 0,
-                    results: req.url
+                    metadata: {
+                      location: req.url
+                    },
+                    content: {
+                      details: {
+                        details: []
+                      }
+                    },
+                    locations: req.url,
+                    results: {
+                      totalResults: 0,
+                      results: req.url
+                    }
                   }
-                }
-              };
+                };
 
-              res.setHeader("Content-Type", "text/javascript");
-              if (url.query.throwError === "true") {
-                res.statusCode = 404;
+                res.setHeader("Content-Type", "text/javascript");
+                if (url.query.throwError === "true") {
+                  res.statusCode = 404;
+                } else {
+                  res.write(url.query.jsonp + "(" + JSON.stringify(resObject) + ")");
+                }
+                res.end();
               } else {
-                res.write(url.query.jsonp + "(" + JSON.stringify(resObject) + ")");
+                return next();
               }
-              res.end();
-            }
-          }]
+            });
+            return middlewares;
+          }
         }
       }
     },
