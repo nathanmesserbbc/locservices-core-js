@@ -358,6 +358,16 @@ test("set() should call options.error if the locationId has no characters", func
   });
 });
 
+test("set() should call options.error if this.api is undefined", function() {
+  preferredLocation = new locservices.core.PreferredLocation();
+  preferredLocation.set("1234", {
+    error: function() {
+      ok(true);
+    },
+    success: function() {}
+  });
+});
+
 test("set() should set this.cookieLocation to undefined", function() {
   preferredLocation.cookieLocation = "foo";
   preferredLocation.set("1");
