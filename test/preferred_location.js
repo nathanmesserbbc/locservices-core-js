@@ -65,6 +65,17 @@ test("isValidLocation() returns true if placeType is 'airport'", function() {
   equal(true, actualValue);
 });
 
+test("isValidLocation() returns true if placeType is 'district'", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "district",
+    country: "GB"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(true, actualValue);
+});
+
 test("isValidLocation() returns true if country is 'GB'", function() {
   var location;
   var actualValue;

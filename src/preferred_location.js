@@ -34,7 +34,7 @@
     }
     placeType = location.placeType; 
     country = location.country;
-    if (placeType !== "settlement" && placeType !== "airport") {
+    if (placeType !== "settlement" && placeType !== "airport" && placeType !== "district") {
       return false;
     }
     if (country !== "GB" && country !== "GG" && country !== "IM" && country !== "JE") {
