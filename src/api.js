@@ -128,7 +128,6 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.search = function(term, options) {
-
     options.params = applyDefaults(
       this._defaultParams,
       createQueryParametersFromObject(options || {})
@@ -216,8 +215,8 @@
   var request = function(path, options, type) {
     options.params.format = "json";
 
-    var xhr = new XMLHttpRequest(),
-        url = path + queryParams(options.params);
+    var url = path + queryParams(options.params),
+        xhr;
 
     var attachHandlers = function(xhrObject) {
       xhrObject.onload = function(evt) {
@@ -244,22 +243,29 @@
       }
     };
 
-    if ("withCredentials" in xhr) {
-      xhr.open("GET", url, true);
-      attachHandlers(xhr);
+    if (typeof window.XMLHttpRequest !== "undefined") {
+      xhr = new XMLHttpRequest();
 
-      xhr.send();
+      if ("withCredentials" in xhr) {
+        xhr.open("GET", url, true);
+        attachHandlers(xhr);
 
-    } else if (typeof XDomainRequest !== "undefined") {
-      xhr = new XDomainRequest();
-      xhr.open("GET", url);
-      attachHandlers(xhr);
+        xhr.send();
 
-      xhr.send();
+      } else if (typeof XDomainRequest !== "undefined") {
+        xhr = new XDomainRequest();
+        xhr.open("GET", url);
+        attachHandlers(xhr);
 
+        xhr.send();
+
+      } else {
+        requestWithJSONP(path, options, type);
+      }
     } else {
       requestWithJSONP(path, options, type);
     }
+
   };
 
   /**
@@ -275,9 +281,12 @@
 
     options.params.format = "jsonp";
     options.params.jsonp = callbackName;
-
     window[callbackName] = function(data) {
-      delete window[callbackName];
+      try {
+        delete window[callbackName];
+      } catch(e) {
+        window[callbackName] = undefined;
+      }
       document.body.removeChild(script);
       if (options.success) {
         options.success(formatResponse(data, type));
@@ -289,6 +298,7 @@
     if (typeof options.error === "function") {
       script.onerror = options.error;
     }
+
     document.body.appendChild(script);
   };
 
