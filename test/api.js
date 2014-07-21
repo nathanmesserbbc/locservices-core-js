@@ -1,3 +1,4 @@
+/*jshint -W020 */
 var api;
 
 module("API", {
@@ -26,12 +27,12 @@ test("Constructor sets base_uri using env", function() {
 });
 
 test("Default PAL base uri is live", function() {
-  equal(api._palBaseUri, "http://www.bbc.co.uk", "PAL base uri is www.bbc.co.uk");
+  equal(api._palBaseUri, "http://www.bbc.co.uk/locator", "PAL base uri is www.bbc.co.uk");
 });
 
 test("Override PAL base uri in constructor", function() {
   api = new locservices.core.API({ env: "test" });
-  equal(api._palBaseUri, "http://www.test.bbc.co.uk", "PAL base uri is www.test.bbc.co.uk");
+  equal(api._palBaseUri, "http://www.test.bbc.co.uk/locator", "PAL base uri is www.test.bbc.co.uk");
 });
 
 test("Constructor uses http as the default protocol to construct the base uri", function() {
@@ -411,6 +412,19 @@ asyncTest("test error handler should be called on 204 if no content is returned 
   api.getLocation(123456, {
     throwError: 204,
     error: function(data) {
+      ok(true, "Test did not run error handler on 204 error.");
+      start();
+    }
+  });
+});
+
+asyncTest("test should fallback to JSONP response if XMLHttpRequest, XDomainRequest & ActiveXObject is undefined", function() {
+  expect(1);
+  var sut = new locservices.core.API();
+  sut._baseUri = "http://localhost:9999/test/fixtures";
+  sut._hasXHR = false;
+  sut.getLocation(123456, {
+    success: function(data) {
       ok(true, "Test did not run error handler on 204 error.");
       start();
     }

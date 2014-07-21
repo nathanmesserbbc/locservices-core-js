@@ -35,6 +35,7 @@
     "locservices": true,
     "module": true,
     "throws": true,
-    "XDomainRequest": true
+    "XDomainRequest": true,
+    "ActiveXObject": true
   }
 }

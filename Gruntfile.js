@@ -74,7 +74,11 @@ module.exports = function(grunt) {
                   res.write("");
                 }
               } else {
-                res.write(JSON.stringify(resObject));
+                if (req.url.indexOf("format=jsonp") === -1) {
+                  res.write(JSON.stringify(resObject));
+                } else {
+                  res.write(url.query.jsonp + "(" + JSON.stringify(resObject) + ")");
+                }
               }
               res.end();
             });

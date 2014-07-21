@@ -67,7 +67,8 @@
     }
 
     this._baseUri = this._options.protocol + "://open." + this._options.env + ".bbc.co.uk/locator";
-    this._palBaseUri = this._options.protocol + "://www" + palEnv + ".bbc.co.uk";
+    this._palBaseUri = this._options.protocol + "://www" + palEnv + ".bbc.co.uk/locator";
+    this._hasXHR = typeof window.XMLHttpRequest !== "undefined";
   }
 
   /**
@@ -116,9 +117,9 @@
       options.params.vv = 2;
     }
 
-    var queryUri = this._baseUri + "/locations/" + encodeURIComponent(id) + detailPath;
+    var queryUri = "/locations/" + encodeURIComponent(id) + detailPath;
 
-    request(queryUri, options, type);
+    this.request(queryUri, options, type);
   };
 
   /**
@@ -149,7 +150,7 @@
     }
     options.success = makeSuccessCallback();
 
-    request(this._baseUri + "/locations", options, "search");
+    this.request("/locations", options, "search");
   };
 
   /**
@@ -168,7 +169,7 @@
     options.params.s = term;
     options.params.a = "true";
 
-    request(this._baseUri + "/locations", options, "autoComplete");
+    this.request("/locations", options, "autoComplete");
   };
 
   /**
@@ -188,7 +189,7 @@
     options.params.lo = lon;
     options.params.la = lat;
 
-    request(this._baseUri + "/locations", options, "reverseGeocode");
+    this.request("/locations", options, "reverseGeocode");
   };
 
   /**
@@ -202,7 +203,7 @@
     options.params = options.params || {};
     options.params.id = id;
 
-    request(this._palBaseUri + "/locator/default/shared/location.json", options, "cookie");
+    this.request("/default/shared/location.json", options, "cookie");
   };
 
   /**
@@ -212,7 +213,7 @@
    * @param {Object} options
    * @param {String} type
    */
-  var request = function(path, options, type) {
+  API.prototype.request = function(path, options, type) {
     options.params.format = "json";
 
     var url = path + queryParams(options.params),
@@ -243,27 +244,44 @@
       }
     };
 
-    if (typeof window.XMLHttpRequest !== "undefined") {
+    if (this._hasXHR) {
       xhr = new XMLHttpRequest();
+    }
 
-      if ("withCredentials" in xhr) {
-        xhr.open("GET", url, true);
-        attachHandlers(xhr);
+    if (this._hasXHR && "withCredentials" in xhr) {
+      xhr.open("GET", this._baseUri + url, true);
+      attachHandlers(xhr);
+      xhr.send();
 
-        xhr.send();
+    } else if (typeof window.XDomainRequest !== "undefined") {
+      var xdr = new XDomainRequest();
+      xdr.open("GET", this._baseUri + url);
+      attachHandlers(xdr);
+      xdr.send();
 
-      } else if (typeof XDomainRequest !== "undefined") {
-        xhr = new XDomainRequest();
-        xhr.open("GET", url);
-        attachHandlers(xhr);
+    } else if (this._hasXHR) {
+      xhr.open("GET", this._palBaseUri + url);
+      attachHandlers(xhr);
+      xhr.send();
 
-        xhr.send();
+    } else if (typeof window.ActiveXObject !== "undefined") {
+      var axo = new ActiveXObject("Microsoft.XMLHTTP");
+      axo.onreadystatechange = function() {
+        if (axo.readyState === 4) {
+          if (options.success && axo.status < 400) {
+            options.success(axo.responseText);
+          } else {
+            if (options.error) {
+              options.error();
+            }
+          }
+        }
+      };
+      axo.open("GET", this._palBaseUri + url, true);
+      axo.send(null);
 
-      } else {
-        requestWithJSONP(path, options, type);
-      }
     } else {
-      requestWithJSONP(path, options, type);
+      requestWithJSONP(this._baseUri + url, options, type);
     }
 
   };
@@ -284,7 +302,7 @@
     window[callbackName] = function(data) {
       try {
         delete window[callbackName];
-      } catch(e) {
+      } catch (e) {
         window[callbackName] = undefined;
       }
       document.body.removeChild(script);
