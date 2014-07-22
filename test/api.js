@@ -430,3 +430,16 @@ asyncTest("test should fallback to JSONP response if XMLHttpRequest, XDomainRequ
     }
   });
 });
+
+asyncTest("#getCookie should always use the PAL based endpoint", function() {
+  expect(1);
+  var sut = new locservices.core.API();
+  sut._palBaseUri = "http://localhost:9999/test/fixtures/pal/endpoint";
+  sut._baseUri = "http://www.bbc.co.uk";
+  sut.getCookie("CF5", {
+    success: function(data) {
+      notEqual(JSON.stringify(data).indexOf("/test/fixtures/pal/endpoint"), -1, "Test did not use _palBaseUrl for cookie");
+      start();
+    }
+  });
+});
