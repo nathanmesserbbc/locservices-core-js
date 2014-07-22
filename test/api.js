@@ -27,12 +27,12 @@ test("Constructor sets base_uri using env", function() {
 });
 
 test("Default PAL base uri is live", function() {
-  equal(api._palBaseUri, "http://www.bbc.co.uk/locator", "PAL base uri is www.bbc.co.uk");
+  equal(api._palBaseUri, "http://www.bbc.co.uk/locator/default", "PAL base uri is www.bbc.co.uk");
 });
 
 test("Override PAL base uri in constructor", function() {
   api = new locservices.core.API({ env: "test" });
-  equal(api._palBaseUri, "http://www.test.bbc.co.uk/locator", "PAL base uri is www.test.bbc.co.uk");
+  equal(api._palBaseUri, "http://www.test.bbc.co.uk/locator/default", "PAL base uri is www.test.bbc.co.uk");
 });
 
 test("Constructor uses http as the default protocol to construct the base uri", function() {

@@ -67,7 +67,7 @@
     }
 
     this._baseUri = this._options.protocol + "://open." + this._options.env + ".bbc.co.uk/locator";
-    this._palBaseUri = this._options.protocol + "://www" + palEnv + ".bbc.co.uk/locator";
+    this._palBaseUri = this._options.protocol + "://www" + palEnv + ".bbc.co.uk/locator/default";
     this._hasXHR = typeof window.XMLHttpRequest !== "undefined";
   }
 
@@ -203,7 +203,7 @@
     options.params = options.params || {};
     options.params.id = id;
 
-    this.request("/default/shared/location.json", options, "cookie");
+    this.request("/shared/location.json", options, "cookie");
   };
 
   /**
@@ -217,6 +217,7 @@
     options.params.format = "json";
 
     var url = path + queryParams(options.params),
+        self = this,
         xhr;
 
     var attachHandlers = function(xhrObject) {
@@ -244,23 +245,31 @@
       }
     };
 
+    var buildUrl = function(env) {
+      if (type === "cookie" || env === "pal") {
+        return self._palBaseUri + url;
+      } else {
+        return self._baseUri + url;
+      }
+    };
+
     if (this._hasXHR) {
       xhr = new XMLHttpRequest();
     }
 
     if (this._hasXHR && "withCredentials" in xhr) {
-      xhr.open("GET", this._baseUri + url, true);
+      xhr.open("GET", buildUrl("api"), true);
       attachHandlers(xhr);
       xhr.send();
 
     } else if (typeof window.XDomainRequest !== "undefined") {
       var xdr = new XDomainRequest();
-      xdr.open("GET", this._baseUri + url);
+      xdr.open("GET", buildUrl("api"));
       attachHandlers(xdr);
       xdr.send();
 
     } else if (this._hasXHR) {
-      xhr.open("GET", this._palBaseUri + url);
+      xhr.open("GET", buildUrl("pal"));
       attachHandlers(xhr);
       xhr.send();
 
@@ -277,11 +286,11 @@
           }
         }
       };
-      axo.open("GET", this._palBaseUri + url, true);
+      axo.open("GET", buildUrl("pal"), true);
       axo.send(null);
 
     } else {
-      requestWithJSONP(this._baseUri + url, options, type);
+      requestWithJSONP(buildUrl("api"), options, type);
     }
 
   };
