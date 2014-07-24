@@ -27,7 +27,7 @@
   function getCurrentPosition(onSuccess, onError, options) {
 
     options = options || {
-      timeout: 1000,
+      timeout: 10000,
       maximumAge: 60,
       enableHighAccuracy: true
     };
