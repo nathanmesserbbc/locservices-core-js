@@ -312,9 +312,9 @@
         }
       }
     } catch (firefoxAccessException) {
-			if ( !isAbort && typeof options.error === "function") {
-				options.error(firefoxAccessException);
-			}
+      if ( !isAbort && typeof options.error === "function") {
+        options.error(firefoxAccessException);
+      }
     }
 
   };
