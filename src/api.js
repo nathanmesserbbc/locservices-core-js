@@ -218,6 +218,7 @@
 
     var url = path + queryParams(options.params),
         self = this,
+        isAbort = false,
         xhr;
 
     var attachHandlers = function(xhrObject) {
@@ -245,6 +246,18 @@
       }
     };
 
+    var abort = function() {
+      isAbort = true;
+      xhr.onload = xhr.onerror = null;
+      xhr.abort();
+    };
+
+    if ( window.ActiveXObject ) {
+      var eventListener = (typeof window.addEventListener === "function") ? window.addeventListener : window.attachEvent;
+      eventListener("onunload", function() {
+        abort();
+      });
+    }
     var buildUrl = function(env) {
       if (type === "cookie" || env === "pal") {
         return self._palBaseUri + url;
@@ -257,40 +270,51 @@
       xhr = new XMLHttpRequest();
     }
 
-    if (this._hasXHR && "withCredentials" in xhr) {
-      xhr.open("GET", buildUrl("api"), true);
-      attachHandlers(xhr);
-      xhr.send();
+    try {
+      if (this._hasXHR && "withCredentials" in xhr) {
+        xhr.open("GET", buildUrl("api"), true);
+        attachHandlers(xhr);
 
-    } else if (typeof window.XDomainRequest !== "undefined") {
-      var xdr = new XDomainRequest();
-      xdr.open("GET", buildUrl("api"));
-      attachHandlers(xdr);
-      xdr.send();
+      } else if (typeof window.XDomainRequest !== "undefined") {
+        xhr = new XDomainRequest();
+        xhr.open("GET", buildUrl("api"));
+        attachHandlers(xhr);
 
-    } else if (this._hasXHR) {
-      xhr.open("GET", buildUrl("pal"));
-      attachHandlers(xhr);
-      xhr.send();
+      } else if (this._hasXHR) {
+        xhr.open("GET", buildUrl("pal"));
+        attachHandlers(xhr);
 
-    } else if (typeof window.ActiveXObject !== "undefined") {
-      var axo = new ActiveXObject("Microsoft.XMLHTTP");
-      axo.onreadystatechange = function() {
-        if (axo.readyState === 4) {
-          if (options.success && axo.status < 400) {
-            options.success(axo.responseText);
-          } else {
-            if (options.error) {
-              options.error();
+      } else if (typeof window.ActiveXObject !== "undefined") {
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+        xhr.open("GET", buildUrl("pal"), true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4) {
+            if (options.success && xhr.status < 400) {
+              setTimeout(function() { options.success(xhr.responseText); });
+            } else {
+              if (options.error) {
+                options.error();
+              }
             }
           }
-        }
-      };
-      axo.open("GET", buildUrl("pal"), true);
-      axo.send(null);
+        };
 
-    } else {
-      requestWithJSONP(buildUrl("api"), options, type);
+      } else {
+        requestWithJSONP(buildUrl("api"), options, type);
+      }
+
+      if (typeof xhr !== "undefined") {
+        try {
+          xhr.send(null);
+        } catch (e) {
+          abort();
+          throw e;
+        }
+      }
+    } catch (firefoxAccessException) {
+			if ( !isAbort && typeof options.error === "function") {
+				options.error(firefoxAccessException);
+			}
     }
 
   };
