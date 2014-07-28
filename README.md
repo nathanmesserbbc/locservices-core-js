@@ -245,7 +245,7 @@ This returns the following location results:
 
 ### Cookie
 
-Returns a compressed cookie based on the location (geonameID or Postcode) passed in: 
+Returns a compressed cookie based on the location (geonameID or Postcode) passed in:
 
 ````
 api.getCoolie("CF5", {
@@ -352,6 +352,7 @@ Developing
 To start development make sure node is installed and run:
 
     npm install
+    bower install
 
 
 ### QUnit Tests

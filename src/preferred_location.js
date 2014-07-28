@@ -29,9 +29,13 @@
    */
   PreferredLocation.prototype.isValidLocation = function(location) {
     var placeType, country;
+    if ("object" !== typeof location) {
+      return false;
+    }
     placeType = location.placeType;
+
     country = location.country;
-    if (placeType !== "settlement" && placeType !== "airport") {
+    if (placeType !== "settlement" && placeType !== "airport" && placeType !== "district") {
       return false;
     }
     if (country !== "GB" && country !== "GG" && country !== "IM" && country !== "JE") {
@@ -185,6 +189,15 @@
       if ("l" === domain.name) {
         location.id = domain.data.i;
         location.name = domain.data.n;
+        if (domain.data.c) {
+          location.container = domain.data.c;
+        }
+        if (domain.data.y) {
+          location.country = domain.data.y;
+        }
+        if (domain.data.p) {
+          location.placeType = domain.data.p;
+        }
         if (domain.data.h) {
           location.nation = nationsMap[domain.data.h];
         }
@@ -219,7 +232,11 @@
     var cookieDomain;
     options = options || {};
 
-    if ("string" !== typeof locationId || "" === locationId.replace(/^\s+|\s+$/g, "")) {
+    if (
+      undefined === this.api ||
+      "string" !== typeof locationId ||
+      "" === locationId.replace(/^\s+|\s+$/g, "")
+    ) {
       if ("function" === typeof options.error) {
         options.error();
       }

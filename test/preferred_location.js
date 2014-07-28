@@ -16,6 +16,12 @@ module("Preferred Location", {
 
 // isValidLocation()
 
+test("isValidLocation() returns false if location is not an object", function() {
+  var actualValue;
+  actualValue = preferredLocation.isValidLocation(undefined);
+  equal(false, actualValue);
+});
+
 test("isValidLocation() returns false if placeType is invalid", function() {
   var location;
   var actualValue;
@@ -54,6 +60,17 @@ test("isValidLocation() returns true if placeType is 'airport'", function() {
   var actualValue;
   location = {
     placeType: "airport",
+    country: "GB"
+  };
+  actualValue = preferredLocation.isValidLocation(location);
+  equal(true, actualValue);
+});
+
+test("isValidLocation() returns true if placeType is 'district'", function() {
+  var location;
+  var actualValue;
+  location = {
+    placeType: "district",
     country: "GB"
   };
   actualValue = preferredLocation.isValidLocation(location);
@@ -256,6 +273,39 @@ test("get() should return the expected location object", function() {
   );
 });
 
+// Test the additional container, country and placeType properties added in MYLOC-96
+test("get() should return the expected location object with additional properties", function() {
+  var expectedLocation;
+  var actualLocation;
+  var stub;
+
+  expectedLocation = {
+    id        : "6690828",
+    name      : "Pontypridd",
+    container : "Rhondda Cynon Taff",
+    placeType : "settlement",
+    country   : "GB",
+    nation    : "wales",
+    news    : {
+      id   : "66",      
+      path : "england/surrey",
+      tld  : "surrey",
+      name : "Surrey"
+    },
+    weather : {
+      id   : "4172",
+      name : "Dorking"
+    }
+  };
+  stub = sinon.stub(preferredLocation, "getLocServCookie");
+  stub.returns("1#l1#i=6690828:n=Pontypridd:c=Rhondda Cynon Taff:p=settlement:y=GB:h=w@w1#i=4172:p=Dorking@d1#1=l:2=e:3=e:4=2.41@n1#r=66");
+  
+  actualLocation = preferredLocation.get();
+  deepEqual(actualLocation, expectedLocation, 
+    "get() does not return the expected location object"
+  );
+});
+
 test("get() should return a numerical location id as a string", function() {
   var expectedLocationId;
   var actualLocation;
@@ -302,6 +352,16 @@ test("set() should call options.error if the locationId has no characters", func
     options.success();
   });
   preferredLocation.set(" ", {
+    error: function() {
+      ok(true);
+    },
+    success: function() {}
+  });
+});
+
+test("set() should call options.error if this.api is undefined", function() {
+  preferredLocation = new locservices.core.PreferredLocation();
+  preferredLocation.set("1234", {
     error: function() {
       ok(true);
     },

@@ -93,25 +93,21 @@ module.exports = function(grunt) {
         options: {
           sourceMap: true
         },
-        files: {
-          "dist/api.min.js": "src/api.js",
-          "dist/preferred_location.min.js": "src/preferred_location.js",
-          "dist/geolocation.min.js": "src/geolocation.js",
-          "dist/recent_locations.min.js": "src/recent_locations.js"
-        }
+        files: [
+          {
+            expand: true,
+            cwd: "src",
+            src: ["**/*.js"],
+            dest: "dist/",
+            ext: ".min.js"
+          }
+        ]
       }
     }
 
   });
 
   require("load-grunt-tasks")(grunt);
-
-  grunt.loadNpmTasks("grunt-contrib-connect");
-  grunt.loadNpmTasks("grunt-contrib-qunit");
-  grunt.loadNpmTasks("grunt-contrib-jshint");
-  grunt.loadNpmTasks("grunt-jscs-checker");
-  grunt.loadNpmTasks("grunt-contrib-watch");
-  grunt.loadNpmTasks("grunt-contrib-uglify");
 
   grunt.registerTask("build", ["jshint", "jscs", "test", "uglify"]);
   grunt.registerTask("test", ["connect", "qunit"]);
