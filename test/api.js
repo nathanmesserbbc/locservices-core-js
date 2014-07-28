@@ -1,4 +1,3 @@
-/*jshint -W020 */
 var api;
 
 module("API", {

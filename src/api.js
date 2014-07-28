@@ -279,7 +279,7 @@
     }
 
     try {
-      if (this._hasXHR && "withCredentials" in xhr) {
+      if (xhr && "withCredentials" in xhr) {
         xhr.open("GET", buildUrl("api"), true);
         attachHandlers(xhr);
 
