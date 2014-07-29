@@ -265,6 +265,12 @@
       xhr.abort();
     };
 
+    var handleFirefoxAccessException = function(firefoxAccessException) {
+      if ( !isAbort && typeof options.error === "function") {
+        options.error(firefoxAccessException);
+      }
+    };
+
     if (window.ActiveXObject) {
       addEventListener("onunload", abort);
     }
@@ -281,53 +287,55 @@
       xhr = new XMLHttpRequest();
     }
 
-    try {
-      if (xhr && "withCredentials" in xhr) {
+    if (xhr && "withCredentials" in xhr) {
+      try {
         xhr.open("GET", buildUrl("api"), true);
         attachHandlers(xhr);
+      } catch (firefoxAccessException) {
+        handleFirefoxAccessException(firefoxAccessException);
+      }
 
-      } else if (typeof window.XDomainRequest !== "undefined") {
-        xhr = new XDomainRequest();
-        xhr.open("GET", buildUrl("api"));
-        attachHandlers(xhr);
+    } else if (typeof window.XDomainRequest !== "undefined") {
+      xhr = new XDomainRequest();
+      xhr.open("GET", buildUrl("api"));
+      attachHandlers(xhr);
 
-      } else if (this._hasXHR) {
+    } else if (xhr) {
+      try {
         xhr.open("GET", buildUrl("pal"));
         attachHandlers(xhr);
+      } catch (firefoxAccessException) {
+        handleFirefoxAccessException(firefoxAccessException);
+      }
 
-      } else if (typeof window.ActiveXObject !== "undefined") {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
-        xhr.open("GET", buildUrl("pal"), true);
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4) {
-            if (options.success && xhr.status < 400) {
-              setTimeout(function() { options.success(xhr.responseText); });
-            } else {
-              if (options.error) {
-                options.error();
-              }
+    } else if (typeof window.ActiveXObject !== "undefined") {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+      xhr.open("GET", buildUrl("pal"), true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (options.success && xhr.status < 400) {
+            setTimeout(function() { options.success(xhr.responseText); });
+          } else {
+            if (options.error) {
+              options.error();
             }
           }
-          if (window.ActiveXObject) {
-            removeEventListener("onunload", abort);
-          }
-        };
-
-      } else {
-        requestWithJSONP(buildUrl("api"), options, type);
-      }
-
-      if (typeof xhr !== "undefined") {
-        try {
-          xhr.send(null);
-        } catch (e) {
-          abort();
-          throw e;
         }
-      }
-    } catch (firefoxAccessException) {
-      if ( !isAbort && typeof options.error === "function") {
-        options.error(firefoxAccessException);
+        if (window.ActiveXObject) {
+          removeEventListener("onunload", abort);
+        }
+      };
+
+    } else {
+      requestWithJSONP(buildUrl("api"), options, type);
+    }
+
+    if (typeof xhr !== "undefined") {
+      try {
+        xhr.send(null);
+      } catch (e) {
+        abort();
+        throw e;
       }
     }
 
