@@ -224,6 +224,8 @@
   API.prototype.request = function(path, options, type) {
     options.params.format = "json";
 
+    var addEventListener = (typeof window.addEventListener === "function") ? window.addEventListener : window.attachEvent;
+    var removeEventListener = (typeof window.removeEventListener === "function") ? window.removeEventListener : window.detachEvent;
     var url = path + queryParams(options.params),
         self = this,
         isAbort = false,
@@ -246,6 +248,9 @@
             options.error();
           }
         }
+        if (window.ActiveXObject) {
+          removeEventListener("onunload", abort);
+        }
       };
 
       // Network level error, resource unable to be loaded
@@ -260,12 +265,10 @@
       xhr.abort();
     };
 
-    if ( window.ActiveXObject ) {
-      var eventListener = (typeof window.addEventListener === "function") ? window.addeventListener : window.attachEvent;
-      eventListener("onunload", function() {
-        abort();
-      });
+    if (window.ActiveXObject) {
+      addEventListener("onunload", abort);
     }
+
     var buildUrl = function(env) {
       if (type === "cookie" || env === "pal") {
         return self._palBaseUri + url;
@@ -304,6 +307,9 @@
                 options.error();
               }
             }
+          }
+          if (window.ActiveXObject) {
+            removeEventListener("onunload", abort);
           }
         };
 
