@@ -235,14 +235,8 @@
       xhrObject.onload = function(evt) {
         if (options.success && evt.target.status < 400) {
           var data;
-          try {
-            data = JSON.parse(xhrObject.responseText);
-            options.success(formatResponse(data, type));
-          } catch (e) {
-            if (options.error) {
-              options.error();
-            }
-          }
+          data = parseJSON(xhrObject.responseText);
+          options.success(formatResponse(data, type));
         } else {
           if (options.error) {
             options.error();
@@ -283,6 +277,19 @@
       }
     };
 
+    var parseJSON = function(data) {
+      if (window.JSON && window.JSON.parse) {
+        return window.JSON.parse(data);
+      }
+      if (data === null) {
+        return data;
+      }
+
+      if ( typeof data === "string" ) {
+        return (new Function("return " + data))();
+      }
+    };
+
     if (this._hasXHR) {
       xhr = new XMLHttpRequest();
     }
@@ -314,7 +321,9 @@
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
           if (options.success && xhr.status < 400) {
-            setTimeout(function() { options.success(xhr.responseText); });
+            var data;
+            data = parseJSON(xhr.responseText);
+            setTimeout(function() { options.success(formatResponse(data, type)); });
           } else {
             if (options.error) {
               options.error();
