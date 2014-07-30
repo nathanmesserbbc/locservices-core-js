@@ -235,8 +235,14 @@
       xhrObject.onload = function(evt) {
         if (options.success && evt.target.status < 400) {
           var data;
-          data = parseJSON(xhrObject.responseText);
-          options.success(formatResponse(data, type));
+          try {
+            data = parseJSON(xhrObject.responseText);
+            options.success(formatResponse(data, type));
+          } catch (e) {
+            if (options.error) {
+              options.error();
+            }
+          }
         } else {
           if (options.error) {
             options.error();
@@ -279,14 +285,17 @@
 
     var parseJSON = function(data) {
       if (window.JSON && window.JSON.parse) {
-        return window.JSON.parse(data);
-      }
-      if (data === null) {
-        return data;
+        try {
+          return window.JSON.parse(data);
+        } catch (e) {
+          return null;
+        }
       }
 
-      if ( typeof data === "string" ) {
+      if (typeof data === "string") {
         return (new Function("return " + data))();
+      } else {
+        return null;
       }
     };
 
@@ -322,8 +331,14 @@
         if (xhr.readyState === 4) {
           if (options.success && xhr.status < 400) {
             var data;
-            data = parseJSON(xhr.responseText);
-            setTimeout(function() { options.success(formatResponse(data, type)); });
+            try {
+              data = parseJSON(xhr.responseText);
+              setTimeout(function() { options.success(formatResponse(data, type)); });
+            } catch (e) {
+              if (options.error) {
+                options.error();
+              }
+            }
           } else {
             if (options.error) {
               options.error();
