@@ -67,7 +67,8 @@
     }
 
     this._baseUri = this._options.protocol + "://open." + this._options.env + ".bbc.co.uk/locator";
-    this._palBaseUri = this._options.protocol + "://www" + palEnv + ".bbc.co.uk";
+    this._palBaseUri = this._options.protocol + "://www" + palEnv + ".bbc.co.uk/locator/default";
+    this._hasXHR = typeof window.XMLHttpRequest !== "undefined";
   }
 
   /**
@@ -124,9 +125,9 @@
       options.params.vv = 2;
     }
 
-    var queryUri = this._baseUri + "/locations/" + encodeURIComponent(id) + detailPath;
+    var queryUri = "/locations/" + encodeURIComponent(id) + detailPath;
 
-    request(queryUri, options, type);
+    this.request(queryUri, options, type);
   };
 
   /**
@@ -136,7 +137,6 @@
    * @param {object} [options] - An object eith the following valid properties, 'success', 'error', 'params'.
    */
   API.prototype.search = function(term, options) {
-
     options.params = applyDefaults(
       this._defaultParams,
       createQueryParametersFromObject(options || {})
@@ -158,7 +158,7 @@
     }
     options.success = makeSuccessCallback();
 
-    request(this._baseUri + "/locations", options, "search");
+    this.request("/locations", options, "search");
   };
 
   /**
@@ -177,7 +177,7 @@
     options.params.s = term;
     options.params.a = "true";
 
-    request(this._baseUri + "/locations", options, "autoComplete");
+    this.request("/locations", options, "autoComplete");
   };
 
   /**
@@ -197,7 +197,7 @@
     options.params.lo = lon;
     options.params.la = lat;
 
-    request(this._baseUri + "/locations", options, "reverseGeocode");
+    this.request("/locations", options, "reverseGeocode");
   };
 
   /**
@@ -211,25 +211,179 @@
     options.params = options.params || {};
     options.params.id = id;
 
-    request(this._palBaseUri + "/locator/default/shared/location.json", options, "cookie");
+    this.request("/shared/location.json", options, "cookie");
   };
 
   /**
-   * Perform a request to a location endpoint.
+   * Perform an XHR request (if supported) to a location endpoint, fallback to JSONP.
    *
    * @param {String} path
    * @param {Object} options
    * @param {String} type
    */
-  var request = function(path, options, type) {
+  API.prototype.request = function(path, options, type) {
+    options.params.format = "json";
+
+    var addEventListener = (typeof window.addEventListener === "function") ? window.addEventListener : window.attachEvent;
+    var removeEventListener = (typeof window.removeEventListener === "function") ? window.removeEventListener : window.detachEvent;
+    var url = path + queryParams(options.params),
+        self = this,
+        isAbort = false,
+        xhr;
+
+    var attachHandlers = function(xhrObject) {
+      xhrObject.onload = function(evt) {
+        if (options.success && evt.target.status < 400) {
+          var data;
+          try {
+            data = parseJSON(xhrObject.responseText);
+            options.success(formatResponse(data, type));
+          } catch (e) {
+            if (options.error) {
+              options.error();
+            }
+          }
+        } else {
+          if (options.error) {
+            options.error();
+          }
+        }
+        if (window.ActiveXObject) {
+          removeEventListener("onunload", abort);
+        }
+      };
+
+      // Network level error, resource unable to be loaded
+      if (options.error) {
+        xhrObject.onerror = options.error;
+      }
+    };
+
+    var abort = function() {
+      isAbort = true;
+      xhr.onload = xhr.onerror = null;
+      xhr.abort();
+    };
+
+    var handleFirefoxAccessException = function(firefoxAccessException) {
+      if ( !isAbort && typeof options.error === "function") {
+        options.error(firefoxAccessException);
+      }
+    };
+
+    if (window.ActiveXObject) {
+      addEventListener("onunload", abort);
+    }
+
+    var buildUrl = function(env) {
+      if (type === "cookie" || env === "pal") {
+        return self._palBaseUri + url;
+      } else {
+        return self._baseUri + url;
+      }
+    };
+
+    var parseJSON = function(data) {
+      if (window.JSON && window.JSON.parse) {
+        try {
+          return window.JSON.parse(data);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      if (typeof data === "string") {
+        return (new Function("return " + data))();
+      } else {
+        return null;
+      }
+    };
+
+    if (this._hasXHR) {
+      xhr = new XMLHttpRequest();
+    }
+
+    if (xhr && "withCredentials" in xhr) {
+      try {
+        xhr.open("GET", buildUrl("api"), true);
+        attachHandlers(xhr);
+      } catch (firefoxAccessException) {
+        handleFirefoxAccessException(firefoxAccessException);
+      }
+
+    } else if (typeof window.XDomainRequest !== "undefined") {
+      xhr = new XDomainRequest();
+      xhr.open("GET", buildUrl("api"));
+      attachHandlers(xhr);
+
+    } else if (xhr) {
+      try {
+        xhr.open("GET", buildUrl("pal"));
+        attachHandlers(xhr);
+      } catch (firefoxAccessException) {
+        handleFirefoxAccessException(firefoxAccessException);
+      }
+
+    } else if (typeof window.ActiveXObject !== "undefined") {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+      xhr.open("GET", buildUrl("pal"), true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (options.success && xhr.status < 400) {
+            var data;
+            try {
+              data = parseJSON(xhr.responseText);
+              setTimeout(function() { options.success(formatResponse(data, type)); });
+            } catch (e) {
+              if (options.error) {
+                options.error();
+              }
+            }
+          } else {
+            if (options.error) {
+              options.error();
+            }
+          }
+        }
+        if (window.ActiveXObject) {
+          removeEventListener("onunload", abort);
+        }
+      };
+
+    } else {
+      requestWithJSONP(buildUrl("api"), options, type);
+    }
+
+    if (typeof xhr !== "undefined") {
+      try {
+        xhr.send(null);
+      } catch (e) {
+        abort();
+        throw e;
+      }
+    }
+
+  };
+
+  /**
+   * Perform a request via JSONP to a location endpoint.
+   *
+   * @param {String} path
+   * @param {Object} options
+   * @param {String} type
+   */
+  var requestWithJSONP = function(path, options, type) {
     var script, callbackName;
     callbackName = "_locservices_core_api_cb_" + new Date().getTime() + Math.round(100000 * Math.random());
 
     options.params.format = "jsonp";
     options.params.jsonp = callbackName;
-
     window[callbackName] = function(data) {
-      delete window[callbackName];
+      try {
+        delete window[callbackName];
+      } catch (e) {
+        window[callbackName] = undefined;
+      }
       document.body.removeChild(script);
       if (options.success) {
         options.success(formatResponse(data, type));
@@ -241,6 +395,7 @@
     if (typeof options.error === "function") {
       script.onerror = options.error;
     }
+
     document.body.appendChild(script);
   };
 

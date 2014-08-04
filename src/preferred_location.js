@@ -32,7 +32,8 @@
     if ("object" !== typeof location) {
       return false;
     }
-    placeType = location.placeType; 
+    placeType = location.placeType;
+
     country = location.country;
     if (placeType !== "settlement" && placeType !== "airport" && placeType !== "district") {
       return false;
@@ -99,7 +100,7 @@
   };
 
   /**
-   * Returns the domain that should be used when setting the locserv cookie by 
+   * Returns the domain that should be used when setting the locserv cookie by
    * checking if the url is a *.bbc.co.uk or *.bbc.com domain.
    *
    * @return String|Boolean
@@ -232,8 +233,8 @@
     options = options || {};
 
     if (
-      undefined === this.api || 
-      "string" !== typeof locationId || 
+      undefined === this.api ||
+      "string" !== typeof locationId ||
       "" === locationId.replace(/^\s+|\s+$/g, "")
     ) {
       if ("function" === typeof options.error) {
@@ -250,7 +251,7 @@
         options.error();
       }
     }
-    
+
     this.api.getCookie(locationId, {
       success: function(data) {
         var cookieString, cookieExpires;

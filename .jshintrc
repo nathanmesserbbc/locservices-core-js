@@ -34,6 +34,8 @@
     "expect": true,
     "locservices": true,
     "module": true,
-    "throws": true
+    "throws": true,
+    "XDomainRequest": true,
+    "ActiveXObject": true
   }
 }

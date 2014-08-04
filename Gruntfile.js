@@ -6,7 +6,12 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON("package.json"),
 
     qunit: {
-      all: ["test/index.html"]
+      all: {
+        options: {
+          "--web-security": false,
+          urls: ["http://localhost:9999/test/index.html"]
+        }
+      }
     },
 
     jshint: {
@@ -36,38 +41,46 @@ module.exports = function(grunt) {
           port: 9999,
           hostname: "localhost",
           middleware: function(connect, options, middlewares) {
-            middlewares.push(function(req, res, next) {
-              if (req.url.indexOf("test/fixtures") !== -1) {
-                var url = require("url").parse(req.url, true);
-                var resObject = {
-                  response: {
-                    totalResults: 0,
-                    metadata: {
-                      location: req.url
-                    },
-                    content: {
-                      details: {
-                        details: []
-                      }
-                    },
-                    locations: req.url,
-                    results: {
-                      totalResults: 0,
-                      results: req.url
-                    }
-                  }
-                };
 
-                res.setHeader("Content-Type", "text/javascript");
-                if (url.query.throwError === "true") {
-                  res.statusCode = 404;
+            middlewares.push(function(req, res, next) {
+              if (req.url.indexOf("/test/fixtures") === -1) {
+                return next();
+              }
+              var url = require("url").parse(req.url, true);
+              var resObject = {
+                response: {
+                  totalResults: 0,
+                  metadata: {
+                    location: req.url
+                  },
+                  content: {
+                    details: {
+                      details: []
+                    }
+                  },
+                  locations: req.url,
+                  results: {
+                    totalResults: 0,
+                    results: req.url
+                  }
+                }
+              };
+
+              res.setHeader("Content-Type", "text/javascript");
+              var error = url.query.throwError;
+              if (typeof error !== "undefined") {
+                res.statusCode = (typeof error === "number") ? error : 404;
+                if (error === 204) {
+                  res.write("");
+                }
+              } else {
+                if (req.url.indexOf("format=jsonp") === -1) {
+                  res.write(JSON.stringify(resObject));
                 } else {
                   res.write(url.query.jsonp + "(" + JSON.stringify(resObject) + ")");
                 }
-                res.end();
-              } else {
-                return next();
               }
+              res.end();
             });
             return middlewares;
           }

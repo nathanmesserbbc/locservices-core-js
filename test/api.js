@@ -26,12 +26,12 @@ test("Constructor sets base_uri using env", function() {
 });
 
 test("Default PAL base uri is live", function() {
-  equal(api._palBaseUri, "http://www.bbc.co.uk", "PAL base uri is www.bbc.co.uk");
+  equal(api._palBaseUri, "http://www.bbc.co.uk/locator/default", "PAL base uri is www.bbc.co.uk");
 });
 
 test("Override PAL base uri in constructor", function() {
   api = new locservices.core.API({ env: "test" });
-  equal(api._palBaseUri, "http://www.test.bbc.co.uk", "PAL base uri is www.test.bbc.co.uk");
+  equal(api._palBaseUri, "http://www.test.bbc.co.uk/locator/default", "PAL base uri is www.test.bbc.co.uk");
 });
 
 test("Constructor uses http as the default protocol to construct the base uri", function() {
@@ -401,6 +401,65 @@ asyncTest("test parameters are URI encoded", function() {
     success: function(data) {
       var uri = data.location.metadata.location;
       notEqual(uri.indexOf("rows=%5CA"), -1, "Test did not URI encode the location id.");
+      start();
+    }
+  });
+});
+
+asyncTest("test error handler should be called on 404 from api", function() {
+  expect(1);
+  api.getLocation(123456, {
+    throwError: 404,
+    error: function(data) {
+      ok(true, "Test did not run error handler on 404 error.");
+      start();
+    }
+  });
+});
+
+asyncTest("test error handler should be called on 500 from api", function() {
+  expect(1);
+  api.getLocation(123456, {
+    throwError: 500,
+    error: function(data) {
+      ok(true, "Test did not run error handler on 500 error.");
+      start();
+    }
+  });
+});
+
+asyncTest("test error handler should be called on 204 if no content is returned from api", function() {
+  expect(1);
+  api.getLocation(123456, {
+    throwError: 204,
+    error: function(data) {
+      ok(true, "Test did not run error handler on 204 error.");
+      start();
+    }
+  });
+});
+
+asyncTest("test should fallback to JSONP response if XMLHttpRequest, XDomainRequest & ActiveXObject is undefined", function() {
+  expect(1);
+  var sut = new locservices.core.API();
+  sut._baseUri = "http://localhost:9999/test/fixtures";
+  sut._hasXHR = false;
+  sut.getLocation(123456, {
+    success: function(data) {
+      ok(true, "Test did not run error handler on 204 error.");
+      start();
+    }
+  });
+});
+
+asyncTest("#getCookie should always use the PAL based endpoint", function() {
+  expect(1);
+  var sut = new locservices.core.API();
+  sut._palBaseUri = "http://localhost:9999/test/fixtures/pal/endpoint";
+  sut._baseUri = "http://www.bbc.co.uk";
+  sut.getCookie("CF5", {
+    success: function(data) {
+      notEqual(JSON.stringify(data).indexOf("/test/fixtures/pal/endpoint"), -1, "Test did not use _palBaseUrl for cookie");
       start();
     }
   });
