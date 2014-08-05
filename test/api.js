@@ -464,3 +464,4 @@ asyncTest("#getCookie should always use the PAL based endpoint", function() {
     }
   });
 });
+

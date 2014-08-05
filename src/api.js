@@ -223,7 +223,6 @@
    */
   API.prototype.request = function(path, options, type) {
     options.params.format = "json";
-
     var addEventListener = (typeof window.addEventListener === "function") ? window.addEventListener : window.attachEvent;
     var removeEventListener = (typeof window.removeEventListener === "function") ? window.removeEventListener : window.detachEvent;
     var url = path + queryParams(options.params),
@@ -231,37 +230,57 @@
         isAbort = false,
         xhr;
 
-    var attachHandlers = function(xhrObject) {
-      xhrObject.onload = function(evt) {
-        if (options.success && evt.target.status < 400) {
-          var data;
-          try {
-            data = parseJSON(xhrObject.responseText);
-            options.success(formatResponse(data, type));
-          } catch (e) {
-            if (options.error) {
-              options.error();
-            }
-          }
-        } else {
-          if (options.error) {
+    var removeOnunloadListener = function() {
+      if (window.ActiveXObject) {
+        removeEventListener("onunload", abort);
+      }
+    };
+
+    var xhrLoadSuccess = function(xhrObject) {
+      var data;
+      try {
+        data = parseJSON(xhrObject.responseText);
+        setTimeout(function() { options.success(formatResponse(data, type)); });
+      } catch (e) {
+        if (options.error) {
+          options.error();
+        }
+      }
+    };
+
+    var attachHandlersXHR1 = function(xhrObject) {
+      xhrObject.onreadystatechange = function(event) {
+        if (xhrObject.readyState === 4) {
+          if (options.success && xhrObject.status < 400 && null !== xhrObject.responseText) {
+            xhrLoadSuccess(xhrObject);
+          } else if (options.error) {
             options.error();
           }
-        }
-        if (window.ActiveXObject) {
-          removeEventListener("onunload", abort);
+          removeOnunloadListener();
         }
       };
+    };
 
-      // Network level error, resource unable to be loaded
-      if (options.error) {
-        xhrObject.onerror = options.error;
-      }
+    var attachHandlersXHR2 = function(xhrObject) {
+      xhrObject.onload = function() {
+        if (options.success && null !== xhrObject.responseText) {
+          xhrLoadSuccess(xhrObject);
+        } else if (options.error) {
+          options.error();
+        }
+        removeOnunloadListener();
+      };
+      xhrObject.onerror = function() {
+        if (options.error) {
+          options.error();
+        }
+        removeOnunloadListener();
+      };
     };
 
     var abort = function() {
       isAbort = true;
-      xhr.onload = xhr.onerror = null;
+      xhr.onload = xhr.onerror  = xhr.onreadystatechange = null;
       xhr.abort();
     };
 
@@ -306,7 +325,7 @@
     if (xhr && "withCredentials" in xhr) {
       try {
         xhr.open("GET", buildUrl("api"), true);
-        attachHandlers(xhr);
+        attachHandlersXHR2(xhr);
       } catch (firefoxAccessException) {
         handleFirefoxAccessException(firefoxAccessException);
       }
@@ -314,42 +333,18 @@
     } else if (typeof window.XDomainRequest !== "undefined") {
       xhr = new XDomainRequest();
       xhr.open("GET", buildUrl("api"));
-      attachHandlers(xhr);
-
+      attachHandlersXHR2(xhr);
     } else if (xhr) {
       try {
         xhr.open("GET", buildUrl("pal"));
-        attachHandlers(xhr);
+        attachHandlersXHR1(xhr);
       } catch (firefoxAccessException) {
         handleFirefoxAccessException(firefoxAccessException);
       }
-
     } else if (typeof window.ActiveXObject !== "undefined") {
       xhr = new ActiveXObject("Microsoft.XMLHTTP");
       xhr.open("GET", buildUrl("pal"), true);
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-          if (options.success && xhr.status < 400) {
-            var data;
-            try {
-              data = parseJSON(xhr.responseText);
-              setTimeout(function() { options.success(formatResponse(data, type)); });
-            } catch (e) {
-              if (options.error) {
-                options.error();
-              }
-            }
-          } else {
-            if (options.error) {
-              options.error();
-            }
-          }
-        }
-        if (window.ActiveXObject) {
-          removeEventListener("onunload", abort);
-        }
-      };
-
+      attachHandlersXHR1(xhr);
     } else {
       requestWithJSONP(buildUrl("api"), options, type);
     }
@@ -359,7 +354,10 @@
         xhr.send(null);
       } catch (e) {
         abort();
-        throw e;
+        removeOnunloadListener();
+        if (options.error) {
+          options.error();
+        }
       }
     }
 
