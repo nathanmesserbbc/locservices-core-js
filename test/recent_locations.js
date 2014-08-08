@@ -160,3 +160,37 @@ test("clear calls the storage adapters clear method", function() {
   recentLocations.clear();
   ok(stub.calledWith([]), "set() called with empty array");
 });
+
+// handling method calls when _storageAdapter is undefined
+
+test("all() returns an empty Array when there is no storageAdapter", function() {
+  recentLocations._storageAdapter = undefined;
+  equal(recentLocations.all().length, 0, "locations is an array");
+});
+
+test("add() returns false when there is no storageAdapter", function() {
+  var location = {
+    id: "1234",
+    name: "Foo",
+    container: "Bar",
+    placeType: "settlement",
+    country: "GB"
+  };
+  recentLocations._storageAdapter = undefined;
+  equal(recentLocations.add(location), false, "add returns false when the _storageAdapter is undefined");
+});
+
+test("remove() returns false when there is no storageAdapter", function() {
+  recentLocations._storageAdapter = undefined;
+  equal(recentLocations.remove(), false, "remove returns false when the _storageAdapter is undefined");
+});
+
+test("clear() returns false when there is no storageAdapter", function() {
+  recentLocations._storageAdapter = undefined;
+  equal(recentLocations.clear(), false, "clear returns false when the _storageAdapter is undefined");
+});
+
+test("contains() returns false when there is no storageAdapter", function() {
+  recentLocations._storageAdapter = undefined;
+  equal(recentLocations.contains(), false, "contains returns false when the _storageAdapter is undefined");
+});
