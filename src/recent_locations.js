@@ -114,6 +114,10 @@
    */
   RecentLocations.prototype.all = function() {
 
+    if (undefined === this._storageAdapter) {
+      return [];
+    }
+
     return this._storageAdapter.get();
   };
 
@@ -126,7 +130,7 @@
    */
   RecentLocations.prototype.add = function(location) {
 
-    if (!isValidLocation(location)) {
+    if (undefined === this._storageAdapter || !isValidLocation(location)) {
       return false;
     }
 
@@ -158,8 +162,14 @@
   RecentLocations.prototype.remove = function(locationId) {
 
     var new_list = [];
-    var old_list = this._storageAdapter.get();
+    var old_list;
     var k;
+
+    if (undefined === this._storageAdapter) {
+      return false;
+    }
+
+    old_list = this._storageAdapter.get();
 
     for (k in old_list) {
       if (old_list.hasOwnProperty(k) && old_list[k].id.toString() !== locationId.toString()) {
@@ -173,10 +183,16 @@
   /**
    * Clear all the items in the array.
    *
-   * @return void
+   * @return {Boolean} Was the storage cleared
    */
   RecentLocations.prototype.clear = function() {
+
+    if (undefined === this._storageAdapter) {
+      return false;
+    }
+
     this._storageAdapter.set([]);
+    return true;
   };
 
   /**
@@ -188,8 +204,14 @@
   RecentLocations.prototype.contains = function(locationId) {
 
     var exists = false;
-    var locations = this._storageAdapter.get();
+    var locations;
     var k;
+
+    if (undefined === this._storageAdapter) {
+      return false;
+    }
+
+    locations = this._storageAdapter.get();
 
     for (k in locations) {
       if (locations.hasOwnProperty(k) && locations[k].id === locationId) {
