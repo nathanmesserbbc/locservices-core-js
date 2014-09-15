@@ -35,8 +35,18 @@
     return location.id && (typeof location.id === "string") && location.name;
   }
 
+  // window.localStorage throws an exception if disabled so wrapping in a try .. catch to
+  // guard against this.
+  var safeLocalStorage = (function() {
+    try {
+        return window.localStorage;
+    } catch (Error) {
+        return {};
+    }
+  })();
+
   // check if the browser has the capabilities to support this module
-  var isSupported = (typeof window.JSON === "object" && typeof window.localStorage === "object");
+  var isSupported = (typeof window.JSON === "object" && typeof safeLocalStorage.getItem === "function");
 
   /**
    *
@@ -56,14 +66,14 @@
   LocalStorageAdapter.prototype.get = function() {
 
     var list = [];
-    var storageList = localStorage[this._prefix];
+    var storageList = safeLocalStorage[this._prefix];
 
     if (!storageList) {
       return list;
     }
 
     try {
-      list = JSON.parse(localStorage[this._prefix]);
+      list = JSON.parse(safeLocalStorage[this._prefix]);
     } catch (Error) { /* No need to do anything as we'll return an empty array*/ }
 
     return list;
@@ -82,7 +92,7 @@
       return false;
     }
 
-    localStorage[this._prefix] = JSON.stringify(locations);
+    safeLocalStorage[this._prefix] = JSON.stringify(locations);
   };
 
   /**
