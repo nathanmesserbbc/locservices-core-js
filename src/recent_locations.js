@@ -35,18 +35,22 @@
     return location.id && (typeof location.id === "string") && location.name;
   }
 
-  // window.localStorage throws an exception if disabled so wrapping in a try .. catch to
-  // guard against this.
-  var safeLocalStorage = (function() {
+  // Using the same technique as modernizr for detecting if localStorage is available.
+  var hasLocalStorage = (function() {
+    var key = "bbc-locservices-core-js";
     try {
-        return window.localStorage;
+      localStorage.setItem(key, key);
+      localStorage.removeItem(key);
+      return true;
     } catch (Error) {
-        return {};
+      return false;
     }
   })();
 
+  var safeLocalStorage = (hasLocalStorage ? localStorage : {});
+
   // check if the browser has the capabilities to support this module
-  var isSupported = (typeof window.JSON === "object" && typeof safeLocalStorage.getItem === "function");
+  var isSupported = (typeof window.JSON === "object" && hasLocalStorage);
 
   /**
    *
