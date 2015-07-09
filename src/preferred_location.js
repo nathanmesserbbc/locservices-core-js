@@ -213,6 +213,13 @@
           tld  : newsTldMap[domain.data.r],
           name : newsNameMap[domain.data.r]
         };
+      } else if ("d" === domain.name) {
+        location.tvandradio = {
+          bbc_one: parseBBCOne(domain.data["1"]),
+          bbc_two: parseBBCTwo(domain.data["2"]),
+          bbc_radio_one: parseRadioOne(domain.data["3"]),
+          local_radio: parseLocalRadio(domain.data["4"])
+        };
       }
     }
 
@@ -272,6 +279,112 @@
         }
       }
     });
+  };
+  
+  var parseBBCOne = function parseBBCOne(key) {
+    var mapping = {
+      c : "bbc_one_cambridge",
+      ci : "bbc_one_channel_islands",
+      e : "bbc_one_east",
+      em : "bbc_one_east_midlands",
+      l : "bbc_one_london",
+      ne : "bbc_one_north_east",
+      nw : "bbc_one_north_west",
+      ni : "bbc_one_northern_ireland",
+      o : "bbc_one_oxford",
+      sc : "bbc_one_scotland",
+      s : "bbc_one_south",
+      se : "bbc_one_south_east",
+      sw : "bbc_one_south_west",
+      wa : "bbc_one_wales",
+      w : "bbc_one_west",
+      wm : "bbc_one_west_midlands",
+      ey : "bbc_one_east_yorkshire",
+      y : "bbc_one_yorks" 
+    };
+    return mapping[key];
+  };
+  
+  var parseBBCTwo = function parseBBCTwo(key) {
+    var mapping = {
+      e : "bbc_two_england",
+      n : "bbc_two_northern_ireland_digital",
+      s : "bbc_two_scotland",
+      w : "bbc_two_wales_digital"
+    };
+    return mapping[key];
+  };
+  
+  var parseRadioOne = function parseRadioOne(key) {
+    var mapping = {
+      e : "bbc_radio_one",
+      n : "bbc_radio_one_northern_ireland",
+      s : "bbc_radio_one_scotland",
+      w : "bbc_radio_one_wales"
+    };
+    return mapping[key];
+  };
+  
+  var parseLocalRadio = function parseLocalRadio(keys) {
+    var mapping = {
+      2 : "bbc_london",
+      3 : "bbc_radio_berkshire",
+      4 : "bbc_radio_bristol",
+      5 : "bbc_radio_cambridge",
+      6 : "bbc_radio_cornwall",
+      7 : "bbc_radio_coventry_warwickshire",
+      8 : "bbc_radio_cumbria",
+      9 : "bbc_radio_cymru",
+      10 : "bbc_radio_derby",
+      11 : "bbc_radio_devon",
+      12 : "bbc_radio_essex",
+      13 : "bbc_radio_foyle",
+      14 : "bbc_radio_gloucestershire",
+      15 : "bbc_radio_guernsey",
+      16 : "bbc_radio_hereford_worcester",
+      17 : "bbc_radio_humberside",
+      18 : "bbc_radio_jersey",
+      19 : "bbc_radio_kent",
+      20 : "bbc_radio_lancashire",
+      21 : "bbc_radio_leeds",
+      22 : "bbc_radio_leicester",
+      23 : "bbc_radio_lincolnshire",
+      24 : "bbc_radio_manchester",
+      25 : "bbc_radio_merseyside",
+      26 : "bbc_radio_nan_gaidheal",
+      27 : "bbc_radio_newcastle",
+      28 : "bbc_radio_norfolk",
+      29 : "bbc_radio_northampton",
+      30 : "bbc_radio_nottingham",
+      31 : "bbc_radio_orkney",
+      32 : "bbc_radio_oxford",
+      33 : "bbc_radio_scotland",
+      34 : "bbc_radio_sheffield",
+      35 : "bbc_radio_shetland",
+      36 : "bbc_radio_shropshire",
+      37 : "bbc_radio_solent",
+      38 : "bbc_radio_somerset_sound",
+      39 : "bbc_radio_stoke",
+      40 : "bbc_radio_suffolk",
+      41 : "bbc_radio_surrey",
+      42 : "bbc_radio_sussex",
+      43 : "bbc_radio_ulster",
+      44 : "bbc_radio_wales_fm",
+      45 : "bbc_radio_wiltshire",
+      46 : "bbc_radio_york",
+      47 : "bbc_tees",
+      48 : "bbc_three_counties_radio",
+      49 : "bbc_wm"
+    };
+    if ("string" !== typeof keys) {
+      return;
+    }
+    var keyArr = keys.split(".");
+    var localRadios = [];
+    for (var index = 0; index < keyArr.length; index++) {
+      localRadios.push(mapping[keyArr[index]]);
+    }
+    return localRadios;
   };
 
   var newsPathMap = {

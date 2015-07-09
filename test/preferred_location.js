@@ -259,6 +259,12 @@ test("get() should return the expected location object", function() {
       tld  : "surrey",
       name : "Surrey"
     },
+    tvandradio : {
+      bbc_one: "bbc_one_london",
+      bbc_two: "bbc_two_england",
+      bbc_radio_one: "bbc_radio_one",
+      local_radio: ["bbc_london", "bbc_radio_surrey"]
+    },
     weather : {
       id   : "4172",
       name : "Dorking"
@@ -295,6 +301,12 @@ test("get() should return the expected location object with additional propertie
     weather : {
       id   : "4172",
       name : "Dorking"
+    },
+    tvandradio : {
+      bbc_one: "bbc_one_london",
+      bbc_two: "bbc_two_england",
+      bbc_radio_one: "bbc_radio_one",
+      local_radio: ["bbc_london", "bbc_radio_surrey"]
     }
   };
   stub = sinon.stub(preferredLocation, "getLocServCookie");
@@ -442,4 +454,34 @@ test("set() should call error callback on api error", function() {
   };
   preferredLocation.set("1", options);
   equal(actualEvent, expectedEvent, "error callback does not recieve the expected event");
+});
+
+test("get() should return the tvandradio properties", function() {
+  var expectedLocation;
+  var actualLocation;
+  var stub;
+
+  expectedLocation = {
+    id        : "6690828",
+    name      : "Pontypridd",
+    container : "Rhondda Cynon Taff",
+    placeType : "settlement",
+    country   : "GB",
+    nation    : "wales",
+    news: null,
+    tvandradio : {
+      bbc_one: "bbc_one_london",
+      bbc_two: "bbc_two_england",
+      bbc_radio_one: "bbc_radio_one",
+      local_radio: ["bbc_london", "bbc_radio_surrey"]
+    },
+    weather: null
+  };
+  stub = sinon.stub(preferredLocation, "getLocServCookie");
+  stub.returns("1#l1#i=6690828:n=Pontypridd:c=Rhondda Cynon Taff:p=settlement:y=GB:h=w@d1#1=l:2=e:3=e:4=2.41");
+
+  actualLocation = preferredLocation.get();
+  deepEqual(actualLocation, expectedLocation,
+    "get() does not return the expected location object"
+  );
 });
